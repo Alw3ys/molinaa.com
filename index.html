@@ -1,23 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alvaro Molina</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-color: white;
+            --text-color: #333;
+            --link-color: #0077b5;
+            --link-hover-color: #005582;
+            --border-color: #eee;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --link-color: #4da3ff;
+            --link-hover-color: #75b6ff;
+            --border-color: #333;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: white;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             line-height: 1.5;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .container {
             max-width: 600px;
@@ -36,7 +53,7 @@
         }
         footer {
             padding: 15px 0;
-            border-top: 1px solid #eee;
+            border-top: 1px solid var(--border-color);
         }
         .social-links {
             margin-bottom: 20px;
@@ -44,36 +61,61 @@
         .social-links a {
             display: inline-block;
             margin: 0 12px;
-            color: #333;
+            color: var(--text-color);
             font-size: 1.5rem;
             transition: color 0.3s ease;
         }
         .social-links a:hover {
-            color: #0077b5;
+            color: var(--link-color);
         }
         .email {
             font-size: 0.95rem;
         }
         .email a {
-            color: #333;
+            color: var(--text-color);
             text-decoration: none;
-            border-bottom: 1px dotted #333;
+            border-bottom: 1px dotted var(--text-color);
         }
         .email a:hover {
-            color: #0077b5;
-            border-bottom: 1px solid #0077b5;
+            color: var(--link-color);
+            border-bottom: 1px solid var(--link-color);
         }
         a {
-            color: #0077b5;
+            color: var(--link-color);
             text-decoration: none;
             transition: color 0.3s ease;
         }
         a:hover {
-            color: #005582;
+            color: var(--link-hover-color);
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+        .theme-toggle:hover {
+            background-color: rgba(128, 128, 128, 0.1);
         }
     </style>
 </head>
 <body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+    <i class="fas fa-moon"></i>
+</button>
+
 <div class="container">
     <h1>Alvaro Molina</h1>
 
@@ -106,5 +148,56 @@
         </div>
     </footer>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlElement = document.documentElement;
+    const icon = themeToggle.querySelector('i');
+
+    // Check for saved theme preference or use system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      htmlElement.setAttribute('data-theme', savedTheme);
+      updateIcon(savedTheme);
+    } else {
+      // Check system preference
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = prefersDarkMode ? 'dark' : 'light';
+      htmlElement.setAttribute('data-theme', theme);
+      updateIcon(theme);
+    }
+
+    // Toggle theme on button click
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+      htmlElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateIcon(newTheme);
+    });
+
+    // Update icon based on theme
+    function updateIcon(theme) {
+      if (theme === 'dark') {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      } else {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+      }
+    }
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) {
+        const newTheme = e.matches ? 'dark' : 'light';
+        htmlElement.setAttribute('data-theme', newTheme);
+        updateIcon(newTheme);
+      }
+    });
+  });
+</script>
 </body>
 </html>
