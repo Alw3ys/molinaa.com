@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alvaro Molina | Blog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: white;
+            --text-color: #333;
+            --link-color: #0077b5;
+            --link-hover-color: #005582;
+            --border-color: #eee;
+            --card-bg: #f9f9f9;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --link-color: #4da3ff;
+            --link-hover-color: #75b6ff;
+            --border-color: #333;
+            --card-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+
+        nav {
+            margin: 20px 0;
+        }
+
+        nav a {
+            margin: 0 15px;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--link-color);
+        }
+
+        .blog-post {
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .blog-post:last-child {
+            border-bottom: none;
+        }
+
+        .blog-post h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .post-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        [data-theme="dark"] .post-meta {
+            color: #aaa;
+        }
+
+        .read-more {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .read-more:hover {
+            color: var(--link-hover-color);
+        }
+
+        .featured-image {
+            width: 100%;
+            height: 200px;
+            background-color: #ddd;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        [data-theme="dark"] .featured-image {
+            background-color: #333;
+            color: #aaa;
+        }
+
+        .tags {
+            margin-top: 15px;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--card-bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        .social-links {
+            margin-bottom: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 12px;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--link-color);
+        }
+
+        .email {
+            font-size: 0.95rem;
+        }
+
+        .email a {
+            color: var(--text-color);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--text-color);
+        }
+
+        .email a:hover {
+            color: var(--link-color);
+            border-bottom: 1px solid var(--link-color);
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--link-hover-color);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Alvaro Molina</h1>
+        <p>Thoughts on engineering, startups, and outdoor adventures</p>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="blog.html">Blog</a>
+        </nav>
+    </header>
+
+    <main>
+        <article class="blog-post">
+            <div class="featured-image">
+                [Featured Image Placeholder]
+            </div>
+            <h2>Building Scalable Infrastructure for Modern Applications</h2>
+            <div class="post-meta">May 10, 2025 · 8 min read</div>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor. Suspendisse dictum feugiat nisl ut dapibus.
+            </p>
+            <p>
+                Maecenas vestibulum mollis diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur at lacus ac velit ornare lobortis. Cras sagittis. Pellentesque posuere. Praesent turpis. Aenean posuere, tortor sed cursus feugiat, nunc augue blandit nunc, eu sollicitudin urna dolor sagittis lacus.
+            </p>
+            <a href="#" class="read-more">Continue Reading →</a>
+            <div class="tags">
+                <span class="tag">Infrastructure</span>
+                <span class="tag">Kubernetes</span>
+                <span class="tag">Scalability</span>
+            </div>
+        </article>
+
+        <article class="blog-post">
+            <div class="featured-image">
+                [Featured Image Placeholder]
+            </div>
+            <h2>Lessons Learned Building and Selling My First Startup</h2>
+            <div class="post-meta">April 22, 2025 · 12 min read</div>
+            <p>
+                Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus.
+            </p>
+            <p>
+                Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Fusce vulputate eleifend sapien.
+            </p>
+            <a href="#" class="read-more">Continue Reading →</a>
+            <div class="tags">
+                <span class="tag">Startups</span>
+                <span class="tag">Entrepreneurship</span>
+                <span class="tag">Lessons</span>
+            </div>
+        </article>
+
+        <article class="blog-post">
+            <div class="featured-image">
+                [Featured Image Placeholder]
+            </div>
+            <h2>Why I'm Building a Local-First Kubernetes Successor</h2>
+            <div class="post-meta">March 18, 2025 · 6 min read</div>
+            <p>
+                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; In ac dui quis mi consectetuer lacinia. Nam pretium turpis et arcu. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Sed aliquam ultrices mauris. Integer ante arcu, accumsan a, consectetuer eget, posuere ut, mauris.
+            </p>
+            <p>
+                Praesent adipiscing. Phasellus ullamcorper ipsum rutrum nunc. Nunc nonummy metus. Vestibulum volutpat pretium libero. Cras id dui. Aenean ut eros et nisl sagittis vestibulum. Nullam nulla eros, ultricies sit amet, nonummy id, imperdiet feugiat, pede. Sed lectus. Donec mollis hendrerit risus.
+            </p>
+            <a href="#" class="read-more">Continue Reading →</a>
+            <div class="tags">
+                <span class="tag">Kubernetes</span>
+                <span class="tag">Dosei</span>
+                <span class="tag">Local-First</span>
+            </div>
+        </article>
+
+        <article class="blog-post">
+            <div class="featured-image">
+                [Featured Image Placeholder]
+            </div>
+            <h2>Training for My First Ironman: Balancing Work and Endurance Sports</h2>
+            <div class="post-meta">February 5, 2025 · 10 min read</div>
+            <p>
+                Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero.
+            </p>
+            <p>
+                Sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt.
+            </p>
+            <a href="#" class="read-more">Continue Reading →</a>
+            <div class="tags">
+                <span class="tag">Triathlon</span>
+                <span class="tag">Endurance</span>
+                <span class="tag">Work-Life</span>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://twitter.com/Alw3ys" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.linkedin.com/in/alvaro-molina" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/Alw3ys" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        </div>
+
+        <div class="email">
+            <a href="mailto:a@molinaa.com">a@molinaa.com</a>
+        </div>
+    </footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const htmlElement = document.documentElement;
+
+    // Function to apply theme based on system preference
+    function applySystemTheme() {
+      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      htmlElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    }
+
+    // Apply system theme on load
+    applySystemTheme();
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      applySystemTheme();
+    });
+  });
+</script>
+</body>
+</html>
