@@ -88,34 +88,9 @@
         a:hover {
             color: var(--link-hover-color);
         }
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.3s ease;
-        }
-        .theme-toggle:hover {
-            background-color: rgba(128, 128, 128, 0.1);
-        }
     </style>
 </head>
 <body>
-<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
-    <i class="fas fa-moon"></i>
-</button>
-
 <div class="container">
     <h1>Alvaro Molina</h1>
 
@@ -151,51 +126,20 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('themeToggle');
     const htmlElement = document.documentElement;
-    const icon = themeToggle.querySelector('i');
 
-    // Check for saved theme preference or use system preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      htmlElement.setAttribute('data-theme', savedTheme);
-      updateIcon(savedTheme);
-    } else {
-      // Check system preference
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = prefersDarkMode ? 'dark' : 'light';
-      htmlElement.setAttribute('data-theme', theme);
-      updateIcon(theme);
+    // Function to apply theme based on system preference
+    function applySystemTheme() {
+      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      htmlElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
     }
 
-    // Toggle theme on button click
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = htmlElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-
-      htmlElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      updateIcon(newTheme);
-    });
-
-    // Update icon based on theme
-    function updateIcon(theme) {
-      if (theme === 'dark') {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-      } else {
-        icon.classList.remove('fa-sun');
-        icon.classList.add('fa-moon');
-      }
-    }
+    // Apply system theme on load
+    applySystemTheme();
 
     // Listen for system theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      if (!localStorage.getItem('theme')) {
-        const newTheme = e.matches ? 'dark' : 'light';
-        htmlElement.setAttribute('data-theme', newTheme);
-        updateIcon(newTheme);
-      }
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      applySystemTheme();
     });
   });
 </script>
