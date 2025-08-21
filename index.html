@@ -88,14 +88,40 @@
         a:hover {
             color: var(--link-hover-color);
         }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            margin: 0 15px;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: var(--link-color);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Alvaro Molina</h1>
+    <header>
+        <h1>Alvaro Molina</h1>
+        
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="writing.html">Writing</a>
+        </nav>
+    </header>
 
     <div class="content">
-        <p>I'm an Engineer based in Copenhagen, Denmark.</p>
+        <p>I'm an Engineer based in Zürich, Switzerland.</p>
         <p>
             Currently, I spend most of my time working at <a href="https://teton.ai" target="_blank">teton.ai</a> primarily leading infrastructure and contributing to <a href="https://github.com/teton-ai/smith" target="_blank">smith</a> — an OSS Fleet Management System.
             I also enjoy building <a href="https://dosei.io" target="_blank">Dosei</a>, a Local-First Kubernetes successor for developers.
@@ -104,7 +130,7 @@
         <p>Previously, I've founded multiple startups, from bootstrapped ventures like Vexir Network, which I built at 19 and grew to 2.5 million registered users, to venture-backed companies like EnhanceDocs, where I raised funding from reputable investors like <a href="https://dcgross.com/" target="_blank">Daniel Gross</a>. I've served as Director of Engineering for <a href="https://nordcloud.com/" target="_blank">Nordcloud, an IBM Company</a> and held various engineering roles throughout my career.</p>
 
         <p>
-            I'm passionate about endurance sports, particularly triathlon, and enjoy outdoor activities like hiking and snowboarding.
+            I'm passionate about endurance sports, and generally enjoy outdoor activities.
             I hold a <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/power-boat-certificate" target="_blank">power boat license</a> and a
             <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/certificate-of-competency-for-recreational-sailors" target="_blank">Certificate of Competency for recreational sailors</a>.
             Eventually, I hope to become a certified private pilot.
@@ -113,7 +139,7 @@
 
     <footer>
         <div class="social-links">
-            <a href="https://twitter.com/Alw3ys" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+<!--            <a href="https://twitter.com/Alw3ys" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>-->
             <a href="https://www.linkedin.com/in/alvaro-molina" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
             <a href="https://github.com/Alw3ys" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
         </div>

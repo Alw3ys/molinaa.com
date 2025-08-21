@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond the Finish Line: What IRONMAN Really Taught Me | Alvaro Molina</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: white;
+            --text-color: #333;
+            --link-color: #0077b5;
+            --link-hover-color: #005582;
+            --border-color: #eee;
+            --card-bg: #f9f9f9;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --link-color: #4da3ff;
+            --link-hover-color: #75b6ff;
+            --border-color: #333;
+            --card-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .back-link {
+            float: left;
+            margin-bottom: 20px;
+            color: var(--link-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: var(--link-hover-color);
+        }
+
+        .back-link::before {
+            content: '← ';
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .post-meta {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        [data-theme="dark"] .post-meta {
+            color: #aaa;
+        }
+
+        .featured-image {
+            width: 100%;
+            height: 400px;
+            background-image: url('beyond-the-finish-line.JPG');
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 40px;
+            border-radius: 8px;
+        }
+
+        .content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .content h2 {
+            font-size: 1.8rem;
+            margin: 40px 0 20px 0;
+            color: var(--text-color);
+        }
+
+        .content h3 {
+            font-size: 1.4rem;
+            margin: 30px 0 15px 0;
+            color: var(--text-color);
+        }
+
+        .content p {
+            margin-bottom: 20px;
+        }
+
+        .content blockquote {
+            border-left: 4px solid var(--link-color);
+            padding-left: 20px;
+            margin: 30px 0;
+            font-style: italic;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 4px;
+        }
+
+        .content code {
+            background-color: var(--card-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+        }
+
+        .content pre {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .tags {
+            margin: 40px 0;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--card-bg);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 60px;
+        }
+
+        .social-links {
+            margin-bottom: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 12px;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--link-color);
+        }
+
+        .email {
+            font-size: 0.95rem;
+        }
+
+        .email a {
+            color: var(--text-color);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--text-color);
+        }
+
+        .email a:hover {
+            color: var(--link-color);
+            border-bottom: 1px solid var(--link-color);
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--link-hover-color);
+        }
+
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 12px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .music-player:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .play-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.3s ease;
+        }
+
+        .play-btn:hover {
+            color: var(--link-color);
+        }
+
+        .music-info {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <a href="../writing.html" class="back-link">Back to Writing</a>
+        <div style="clear: both;"></div>
+
+        <h1>Beyond the Finish Line: What IRONMAN Really Taught Me</h1>
+        <div class="post-meta">August 17, 2025</div>
+    </header>
+
+    <main>
+        <div class="featured-image">
+        </div>
+
+        <article class="content">
+            <p>
+                Approximately a year and a half ago, I made the decision to tackle an IRONMAN. Everyone has their reasons for taking on such a monumental challenge, and I think that's what makes this distance so special. For me, it was never about the physical challenge—which is indeed probably one of the hardest things I've done physically in my lifetime—but was more about proving to myself that I could be relentless and accomplish anything I set my mind to.
+            </p>
+
+            <p>
+                What led me there was a pattern I'd noticed in my life, and maybe you'll recognize this in yourself too: I would start things with tremendous enthusiasm and intensity, make meaningful progress, but then abandon them just before the breakthrough for one reason or another. A business venture that needed another six months of persistence. Learning a new language that demanded consistency when motivation faded. I had become skilled at beginnings, but terrible at seeing things through to their true completion.
+            </p>
+
+            <p>
+                Looking back, I think this pattern developed because I've always been drawn to paths that my circle didn't fully understand or support. When I ran a business as a teenager, then sold it and decided to skip university to start working at 18, people thought I was making a mistake. When I left stable jobs to start other businesses, friends and family questioned my judgment. When I chose unconventional approaches to building my career, I constantly heard "that's not how things are done."
+            </p>
+
+            <p>
+                I wasn't completely blind to this pattern—I knew having the right business partner or support network would help. I'd tried to find business partners who shared my passion and vision. But somehow it felt forced, or the alignment wasn't quite right. I started to think maybe I was just the type of person who had to go it alone, that needing support was somehow a weakness I needed to overcome.
+            </p>
+
+            <p>
+                This realization hit me hardest after my latest business venture failed. But this time, instead of focusing on what went wrong externally, I looked inward. The failure wasn't really about market conditions or timing—though those mattered too—it was about my inability to stay committed when things got uncomfortable, when progress slowed, when doubt crept in.
+            </p>
+
+            <p>
+                I realized I needed to fundamentally rewire something in myself. I needed to prove—not to anyone else, but to myself—that I could commit to something difficult and see it through, regardless of setbacks, regardless of how I felt on any given day, and especially regardless of whether people understood or supported the journey. I needed to develop the kind of internal conviction that could sustain me through the lonely middle part of any worthwhile pursuit.
+            </p>
+
+            <p>
+                The IRONMAN became my laboratory for developing true relentlessness. Not the kind that burns you out, but the kind that bends without breaking. Over eighteen months of training, I learned what this actually meant in practice.
+            </p>
+
+            <p>
+                But with the IRONMAN, something shifted almost immediately. Within weeks of starting training, I noticed people responding differently. When I mentioned my goal, instead of the skeptical looks I'd grown accustomed to, I saw recognition, even admiration. Sports, somehow, are more socially acceptable than unconventional business ventures or career paths. My circle not only understood my IRONMAN goal—they actively supported it. Friends would ask about my training, family members would check in on my progress.
+            </p>
+
+            <p>
+                The difference was massive—not just noticeable, but transformative in a way that caught me completely off guard. For the first time in years, I was pursuing something difficult with people actively cheering me on rather than questioning my judgment.
+            </p>
+
+            <p>
+                There were the daily 4:30 AM wake-up calls to get to the pool before work, when every fiber of my being wanted to stay in bed. The countless times I chose the training session over social events, not just for the workout itself, but to prioritize sleep so I could show up again the next morning. But now, when I made these choices, people understood. Instead of "come on, just this once," I heard "that's so disciplined, good for you." Each choice felt small in the moment, but together they built something powerful—the ability to consistently choose the harder path when it mattered, supported by people who understood why.
+            </p>
+
+            <p>
+                But relentlessness isn't just about grinding through discomfort. It's about showing up differently when things don't go as planned. When I moved to a new home in another country during peak training volume weeks, with work still demanding my attention, I had to learn that commitment isn't about perfect conditions—it's about finding a way forward regardless of circumstances. But this time, instead of fighting through it alone, I had people offering practical help, asking how they could make the transition easier, checking in to make sure I was managing the stress.
+            </p>
+
+            <p>
+                The real test came about fourteen months in, when I hit that familiar wall from previous abandoned projects. Training volume was crushing, motivation was flagging, and that voice started whispering: "Maybe this isn't worth it." But instead of the skeptical questions I'd faced before—"Are you sure this is worth the stress?"—I heard: "You've got this." "Remember how far you've already come." "What can we do to help you get through this rough patch?" The external support didn't eliminate the difficulty, but it transformed how I experienced it.
+            </p>
+
+            <p>
+                The training taught me that consistency isn't about perfection—it's about returning and making time for what truly matters. Some days I only managed 70% of what I planned, but I learned to measure success not just by individual workouts, but by whether I kept coming back while still making time for my partner and family. The real challenge wasn't just choosing the training—it was learning to balance it with the relationships that give life meaning.
+            </p>
+
+            <p>
+                The journey became about more than just physical endurance. It was about building psychological resilience—the ability to continue when your mind is telling you to stop, when progress feels invisible, when the goal seems impossibly far away. These are the same qualities needed for any meaningful pursuit: building lasting relationships, creating something valuable, or simply becoming the person you want to be.
+            </p>
+
+            <h2>Two Critical Lessons</h2>
+
+            <p>
+                First: true relentlessness. I'm now more patient with results because I understand that meaningful progress often happens below the surface before it becomes visible. I'm less likely to abandon projects when they hit inevitable rough patches because I've learned the difference between a temporary setback and a permanent obstacle. I trust myself more because I've proven I can do difficult things even when I don't feel like it. You need to build this same trust in yourself—the knowledge that you can push through when things get hard.
+            </p>
+
+            <p>
+                Second, and perhaps more importantly, I learned the power of pursuing goals that others can understand and support. What struck me during this journey was how different it felt compared to my previous pursuits. Sports, somehow, are more socially acceptable than unconventional business ventures or career paths. My circle not only understood my IRONMAN goal—they actively supported it. Friends would ask about my training, family members would check in on my progress.
+            </p>
+
+            <p>
+                This support made all the difference during those inevitable low points. When motivation waned, when training felt impossible, when doubt crept in, I had people cheering me on rather than questioning my judgment. I realized that while internal conviction is crucial, having allies on your journey—whether it's your partner, a business partner who believes in your business vision, friends who understand your goals, or family who supports your choices—can be the difference between pushing through and giving up.
+            </p>
+
+            <p>
+                Moving forward, I'm applying both lessons, and maybe you can too. I'm building that unshakeable internal relentlessness, but I'm also being more strategic about finding the right people to join me on difficult paths. Whether it's seeking out co-founders who share your vision, building relationships with people who understand unconventional choices, or simply being better at communicating why something matters to you—understand that the strongest pursuits combine personal determination with community support.
+            </p>
+
+            <p>
+                The IRONMAN was never really about the finish line. It was about building the kind of person who could cross it—someone who shows up consistently, balances what's important, trusts himself to do difficult things, and knows how to build the right support system for the journey. That person, I'm proud to say, now exists.
+            </p>
+
+            <p>
+                And maybe that's the person you're working to become too.
+            </p>
+
+            <p>
+                - Warmly, Still relentless, Alvaro
+            </p>
+        </article>
+
+        <div class="tags">
+            <span class="tag">IRONMAN</span>
+            <span class="tag">Triathlon</span>
+            <span class="tag">Mental Health</span>
+            <span class="tag">Personal Growth</span>
+            <span class="tag">Resilience</span>
+        </div>
+    </main>
+
+    <footer>
+        <div class="social-links">
+<!--            <a href="https://twitter.com/Alw3ys" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>-->
+            <a href="https://www.linkedin.com/in/alvaro-molina" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/Alw3ys" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        </div>
+
+        <div class="email">
+            <a href="mailto:a@molinaa.com">a@molinaa.com</a>
+        </div>
+    </footer>
+</div>
+
+<div class="music-player" id="musicPlayer">
+    <button class="play-btn" id="playBtn">
+        <i class="fas fa-play" id="playIcon"></i>
+    </button>
+    <div class="music-info">♪ Darkest Night</div>
+</div>
+
+<iframe id="soundcloudPlayer" width="0" height="0" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/23violins/darkest-night&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const htmlElement = document.documentElement;
+
+    // Function to apply theme based on system preference
+    function applySystemTheme() {
+      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      htmlElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    }
+
+    // Apply system theme on load
+    applySystemTheme();
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      applySystemTheme();
+    });
+
+    // Music player functionality
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const soundcloudPlayer = document.getElementById('soundcloudPlayer');
+    let isPlaying = false;
+
+    playBtn.addEventListener('click', () => {
+      if (!isPlaying) {
+        // Start playing
+        const iframe = document.createElement('iframe');
+        iframe.width = "0";
+        iframe.height = "0";
+        iframe.scrolling = "no";
+        iframe.frameBorder = "no";
+        iframe.allow = "autoplay";
+        iframe.src = "https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/23violins/darkest-night&color=%23ff5500&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true";
+
+        // Replace the old iframe
+        soundcloudPlayer.parentNode.replaceChild(iframe, soundcloudPlayer);
+
+        playIcon.className = 'fas fa-pause';
+        isPlaying = true;
+      } else {
+        // Stop playing by replacing with non-autoplay iframe
+        const iframe = document.createElement('iframe');
+        iframe.id = "soundcloudPlayer";
+        iframe.width = "0";
+        iframe.height = "0";
+        iframe.scrolling = "no";
+        iframe.frameBorder = "no";
+        iframe.allow = "autoplay";
+        iframe.src = "https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/23violins/darkest-night&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true";
+
+        document.querySelector('iframe').parentNode.replaceChild(iframe, document.querySelector('iframe'));
+
+        playIcon.className = 'fas fa-play';
+        isPlaying = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
