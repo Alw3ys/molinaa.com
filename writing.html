@@ -1,255 +1,261 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alvaro Molina | Writing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: white;
-            --text-color: #333;
-            --link-color: #0077b5;
-            --link-hover-color: #005582;
-            --border-color: #eee;
-            --card-bg: #f9f9f9;
+            --bg: #060606;
+            --text: #ededed;
+            --muted: #8a8a8a;
+            --faint: #4a4a4a;
+            --line: rgba(255, 255, 255, 0.08);
+            --accent: #7c93ff;
+            --card: rgba(255,255,255,0.025);
+            --serif: 'Space Grotesk', sans-serif;
+            --sans: 'Inter', -apple-system, sans-serif;
         }
 
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --link-color: #4da3ff;
-            --link-hover-color: #75b6ff;
-            --border-color: #333;
-            --card-bg: #1e1e1e;
-        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; }
 
         body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.5;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        .aurora {
+            position: fixed; z-index: 0;
+            width: 55vw; height: 55vw; max-width: 650px; max-height: 650px;
+            border-radius: 50%; filter: blur(110px); opacity: 0.4; pointer-events: none;
+            will-change: transform;
+        }
+        .aurora.one { top: -20%; left: -12%; background: radial-gradient(circle, rgba(124,147,255,0.45), transparent 70%); animation: drift1 24s ease-in-out infinite alternate; }
+        .aurora.two { bottom: -25%; right: -12%; background: radial-gradient(circle, rgba(80,80,140,0.4), transparent 70%); animation: drift2 30s ease-in-out infinite alternate; }
+        @keyframes drift1 { from { transform: translate(0,0) scale(1);} to { transform: translate(10vw,8vh) scale(1.2);} }
+        @keyframes drift2 { from { transform: translate(0,0) scale(1.1);} to { transform: translate(-8vw,-6vh) scale(0.9);} }
+
+        .grain {
+            position: fixed; inset: -50%; z-index: 1; pointer-events: none; opacity: 0.045;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            animation: grainShift 0.6s steps(2) infinite;
+        }
+        @keyframes grainShift { 0%{transform:translate(0,0);} 50%{transform:translate(-2%,1%);} 100%{transform:translate(1%,-2%);} }
+
+        #cursor {
+            position: fixed; top:0; left:0; width:26px; height:26px;
+            border:1px solid rgba(255,255,255,0.5); border-radius:50%;
+            transform: translate(-50%,-50%); pointer-events:none; z-index:9999;
+            transition: width .25s ease,height .25s ease,background .25s ease,border-color .25s ease;
+            mix-blend-mode: difference;
+        }
+        #cursor.hover { width:56px; height:56px; background:rgba(255,255,255,0.9); border-color:transparent; }
+        #glow {
+            position: fixed; top:0; left:0; width:500px; height:500px; border-radius:50%;
+            background: radial-gradient(circle, rgba(124,147,255,0.08), transparent 65%);
+            transform: translate(-50%,-50%); pointer-events:none; z-index:2;
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            position: relative; z-index: 3;
+            max-width: 760px; margin: 0 auto; padding: 80px 24px 40px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
+        header { text-align: center; margin-bottom: 70px; }
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
+            font-family: var(--serif); font-weight: 700;
+            font-size: clamp(2.2rem, 6vw, 3rem); letter-spacing: -0.03em; margin: 0; line-height: 1;
+            background: linear-gradient(110deg,#ffffff 20%,#9aa6ff 50%,#ffffff 80%);
+            background-size: 200% auto; -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; animation: shimmer 6s linear infinite;
         }
+        @keyframes shimmer { to { background-position: 200% center; } }
 
-        nav {
-            margin: 20px 0;
-        }
-
+        nav { margin-top: 22px; display: flex; gap: 28px; justify-content: center; }
         nav a {
-            margin: 0 15px;
-            font-size: 1.1rem;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
+            position: relative; font-family: var(--serif); font-size: 0.78rem;
+            letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+            text-decoration: none; padding: 4px 0; transition: color .3s ease;
         }
-
-        nav a:hover {
-            color: var(--link-color);
-        }
+        nav a::after { content:''; position:absolute; left:0; bottom:0; width:100%; height:1px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition: transform .35s cubic-bezier(.2,.7,.2,1); }
+        nav a:hover { color: var(--text); }
+        nav a:hover::after { transform: scaleX(1); }
+        nav a.active { color: var(--text); }
+        nav a.active::after { transform: scaleX(1); background: var(--faint); }
 
         .blog-post {
-            margin-bottom: 50px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
+            border: 1px solid var(--line);
+            background: var(--card);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform .5s cubic-bezier(.2,.7,.2,1), border-color .5s ease, box-shadow .5s ease;
         }
-
-        .blog-post:last-child {
-            border-bottom: none;
-        }
-
-        .blog-post h2 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-
-        .post-meta {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        [data-theme="dark"] .post-meta {
-            color: #aaa;
-        }
-
-        .read-more {
-            display: inline-block;
-            margin-top: 15px;
-            color: var(--link-color);
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-
-        .read-more:hover {
-            color: var(--link-hover-color);
+        .blog-post:hover {
+            transform: translateY(-6px);
+            border-color: rgba(124,147,255,0.4);
+            box-shadow: 0 24px 60px -20px rgba(124,147,255,0.25);
         }
 
         .featured-image {
-            width: 100%;
-            height: 300px;
-            background-image: url('writing/beyond-the-finish-line.JPG');
-            background-size: cover;
-            background-position: center 40%;
-            margin-bottom: 20px;
-            border-radius: 8px;
+            height: 280px;
+            background-image: linear-gradient(to bottom, rgba(6,6,6,0) 40%, rgba(6,6,6,0.85)), url('writing/beyond-the-finish-line.JPG');
+            background-size: cover; background-position: center 40%;
+            transition: transform .8s cubic-bezier(.2,.7,.2,1);
         }
+        .blog-post:hover .featured-image { transform: scale(1.05); }
 
-        [data-theme="dark"] .featured-image {
-            background-color: #333;
-            color: #aaa;
+        .post-body { padding: 8px 34px 34px; }
+
+        .blog-post h2 {
+            font-family: var(--serif); font-weight: 500;
+            font-size: 1.7rem; letter-spacing: -0.02em; margin: 0 0 10px; line-height: 1.2;
         }
+        .blog-post h2 a { color: var(--text); text-decoration: none; transition: color .3s ease; }
+        .blog-post:hover h2 a { color: #fff; }
 
-        .tags {
-            margin-top: 15px;
+        .post-meta {
+            font-family: var(--serif); font-size: 0.72rem; letter-spacing: 0.2em;
+            text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
         }
+        .blog-post p { margin: 0 0 16px; color: #c4c4c4; font-size: 1rem; }
+        .blog-post p a {
+            color: var(--accent);
+            text-decoration: none;
+            background: linear-gradient(var(--accent), var(--accent)) no-repeat;
+            background-position: 0 100%; background-size: 100% 1px; padding-bottom: 1px;
+            transition: background-size .3s cubic-bezier(.2,.7,.2,1), color .3s ease, text-shadow .3s ease;
+        }
+        .blog-post p a:hover { color: #aab6ff; background-size: 100% 2px; text-shadow: 0 0 14px rgba(124,147,255,0.45); }
 
+        .read-more {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: var(--serif); font-size: 0.78rem; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--accent); text-decoration: none;
+            margin-top: 6px; transition: gap .3s ease, color .3s ease;
+        }
+        .read-more:hover { gap: 14px; color: #fff; }
+
+        .tags { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
         .tag {
-            display: inline-block;
-            background-color: var(--card-bg);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            transition: background-color 0.3s ease;
+            font-family: var(--serif); font-size: 0.72rem; letter-spacing: 0.05em;
+            color: var(--muted); padding: 5px 12px; border: 1px solid var(--line);
+            border-radius: 20px; transition: color .3s ease, border-color .3s ease;
         }
+        .tag:hover { color: var(--text); border-color: var(--muted); }
 
-        footer {
-            text-align: center;
-            padding: 15px 0;
-            border-top: 1px solid var(--border-color);
-            margin-top: 40px;
+        footer { text-align: center; padding: 60px 0 0; margin-top: 70px; border-top: 1px solid var(--line); }
+        .social-links { margin-bottom: 16px; display:flex; gap:22px; justify-content:center; }
+        .social-links a { color: var(--muted); font-size: 1.3rem; text-decoration:none; transition: color .3s ease, transform .3s ease; display:inline-block; }
+        .social-links a:hover { color: var(--text); transform: translateY(-4px); }
+        .email a { font-size: 0.92rem; color: var(--muted); text-decoration:none; border-bottom: 1px dotted var(--faint); padding-bottom:1px; transition: color .3s ease, border-color .3s ease; }
+        .email a:hover { color: var(--accent); border-color: var(--accent); }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (hover: none), (pointer: coarse) {
+            body { cursor: auto; }
+            #cursor, #glow { display: none; }
         }
-
-        .social-links {
-            margin-bottom: 20px;
-        }
-
-        .social-links a {
-            display: inline-block;
-            margin: 0 12px;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .social-links a:hover {
-            color: var(--link-color);
-        }
-
-        .email {
-            font-size: 0.95rem;
-        }
-
-        .email a {
-            color: var(--text-color);
-            text-decoration: none;
-            border-bottom: 1px dotted var(--text-color);
-        }
-
-        .email a:hover {
-            color: var(--link-color);
-            border-bottom: 1px solid var(--link-color);
-        }
-
-        a {
-            color: var(--link-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        a:hover {
-            color: var(--link-hover-color);
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+            .reveal { opacity:1 !important; transform:none !important; }
+            .grain { display:none; }
         }
     </style>
 </head>
 <body>
+<div class="aurora one"></div>
+<div class="aurora two"></div>
+<div class="grain"></div>
+<div id="glow"></div>
+<div id="cursor"></div>
+
 <div class="container">
     <header>
-        <h1>Alvaro Molina</h1>
-
+        <h1>Writing</h1>
         <nav>
             <a href="index.html">Home</a>
-            <a href="writing.html">Writing</a>
+            <a href="writing.html" class="active">Writing</a>
         </nav>
     </header>
 
     <main>
-        <article class="blog-post">
-            <div class="featured-image">
-            </div>
-            <h2>Beyond the Finish Line: What IRONMAN Really Taught Me</h2>
-            <div class="post-meta">August 17, 2025</div>
-            <p>
-                Approximately a year and a half ago, I made the decision to tackle an <a href="https://en.wikipedia.org/wiki/Ironman_Triathlon" target="_blank">IRONMAN</a>. Everyone has their reasons for taking on such a monumental challenge, and I think that's what makes this distance so special. For me, it was never about the physical challenge—which is indeed probably one of the hardest things I've done physically in my lifetime—but was more about proving to myself that I could be relentless and accomplish anything I set my mind to.
-            </p>
-            <p>
-                What led me there was a pattern I'd noticed in my life, and maybe you'll recognize this in yourself too: I would start things with tremendous enthusiasm and intensity, make meaningful progress, but then abandon them just before the breakthrough for one reason or another. A business venture that needed another six months of persistence. Learning a new language that demanded consistency when motivation faded. I had become skilled at beginnings, but terrible at seeing things through to their true completion.
-            </p>
-            <a href="writing/beyond-the-finish-line-what-ironman-really-taught-me.html" class="read-more">Continue Reading →</a>
-            <div class="tags">
-                <span class="tag">IRONMAN</span>
-                <span class="tag">Triathlon</span>
-                <span class="tag">Mental Health</span>
-                <span class="tag">Personal Growth</span>
-                <span class="tag">Resilience</span>
+        <article class="blog-post reveal">
+            <a href="writing/beyond-the-finish-line-what-ironman-really-taught-me.html" aria-label="Read article" style="display:block;">
+                <div class="featured-image"></div>
+            </a>
+            <div class="post-body">
+                <div class="post-meta">August 17, 2025</div>
+                <h2><a href="writing/beyond-the-finish-line-what-ironman-really-taught-me.html">Beyond the Finish Line: What IRONMAN Really Taught Me</a></h2>
+                <p>
+                    Approximately a year and a half ago, I made the decision to tackle an <a href="https://en.wikipedia.org/wiki/Ironman_Triathlon" target="_blank">IRONMAN</a>. Everyone has their reasons for taking on such a monumental challenge, and I think that's what makes this distance so special. For me, it was never about the physical challenge—which is indeed probably one of the hardest things I've done physically in my lifetime—but was more about proving to myself that I could be relentless and accomplish anything I set my mind to.
+                </p>
+                <p>
+                    What led me there was a pattern I'd noticed in my life, and maybe you'll recognize this in yourself too: I would start things with tremendous enthusiasm and intensity, make meaningful progress, but then abandon them just before the breakthrough for one reason or another.
+                </p>
+                <a href="writing/beyond-the-finish-line-what-ironman-really-taught-me.html" class="read-more">Continue Reading <i class="fas fa-arrow-right"></i></a>
+                <div class="tags">
+                    <span class="tag">IRONMAN</span>
+                    <span class="tag">Triathlon</span>
+                    <span class="tag">Mental Health</span>
+                    <span class="tag">Personal Growth</span>
+                    <span class="tag">Resilience</span>
+                </div>
             </div>
         </article>
     </main>
 
     <footer>
         <div class="social-links">
-<!--            <a href="https://twitter.com/Alw3ys" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>-->
             <a href="https://www.linkedin.com/in/alvaro-molina" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
             <a href="https://github.com/Alw3ys" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
         </div>
-
-        <div class="email">
-            <a href="mailto:a@molinaa.com">a@molinaa.com</a>
-        </div>
+        <div class="email"><a href="mailto:a@molinaa.com">a@molinaa.com</a></div>
     </footer>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const htmlElement = document.documentElement;
-
-    // Function to apply theme based on system preference
-    function applySystemTheme() {
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      htmlElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
-    }
-
-    // Apply system theme on load
-    applySystemTheme();
-
-    // Listen for system theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      applySystemTheme();
+  // custom cursor + glow
+  (function () {
+    const cursor = document.getElementById('cursor');
+    const glow = document.getElementById('glow');
+    if (!cursor) return;
+    let mx = innerWidth/2, my = innerHeight/2, gx=mx, gy=my;
+    addEventListener('mousemove', e => {
+      mx=e.clientX; my=e.clientY;
+      cursor.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
     });
-  });
+    (function tick(){
+      gx+=(mx-gx)*0.08; gy+=(my-gy)*0.08;
+      glow.style.transform = `translate(${gx}px,${gy}px) translate(-50%,-50%)`;
+      requestAnimationFrame(tick);
+    })();
+    document.querySelectorAll('a').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+  })();
+
+  // scroll reveal
+  (function () {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  })();
 </script>
 </body>
 </html>

@@ -1,173 +1,447 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alvaro Molina</title>
+    <meta name="description" content="Alvaro Molina — Engineer based in Zürich, Switzerland.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: white;
-            --text-color: #333;
-            --link-color: #0077b5;
-            --link-hover-color: #005582;
-            --border-color: #eee;
+            --bg: #060606;
+            --text: #ededed;
+            --muted: #8a8a8a;
+            --faint: #4a4a4a;
+            --line: rgba(255, 255, 255, 0.08);
+            --accent: #7c93ff;
+            --accent-soft: rgba(124, 147, 255, 0.35);
+            --serif: 'Space Grotesk', sans-serif;
+            --sans: 'Inter', -apple-system, sans-serif;
         }
 
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --link-color: #4da3ff;
-            --link-hover-color: #75b6ff;
-            --border-color: #333;
-        }
+        * { box-sizing: border-box; }
+
+        html, body { margin: 0; padding: 0; }
 
         body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.5;
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        /* ---------- background layers ---------- */
+        #constellation {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .aurora {
+            position: fixed;
+            z-index: 0;
+            width: 60vw;
+            height: 60vw;
+            max-width: 720px;
+            max-height: 720px;
+            border-radius: 50%;
+            filter: blur(110px);
+            opacity: 0.5;
+            pointer-events: none;
+            will-change: transform;
+        }
+        .aurora.one {
+            top: -15%;
+            left: -10%;
+            background: radial-gradient(circle, rgba(124,147,255,0.5), transparent 70%);
+            animation: drift1 22s ease-in-out infinite alternate;
+        }
+        .aurora.two {
+            bottom: -20%;
+            right: -10%;
+            background: radial-gradient(circle, rgba(80,80,140,0.45), transparent 70%);
+            animation: drift2 28s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift1 {
+            from { transform: translate(0, 0) scale(1); }
+            to   { transform: translate(12vw, 10vh) scale(1.2); }
+        }
+        @keyframes drift2 {
+            from { transform: translate(0, 0) scale(1.1); }
+            to   { transform: translate(-10vw, -8vh) scale(0.9); }
+        }
+
+        .grain {
+            position: fixed;
+            inset: -50%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.045;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            animation: grainShift 0.6s steps(2) infinite;
+        }
+        @keyframes grainShift {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(-2%, 1%); }
+            100% { transform: translate(1%, -2%); }
+        }
+
+        /* cursor spotlight */
+        #cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 26px; height: 26px;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: width .25s ease, height .25s ease, background .25s ease, border-color .25s ease;
+            mix-blend-mode: difference;
+        }
+        #cursor.hover {
+            width: 56px; height: 56px;
+            background: rgba(255,255,255,0.9);
+            border-color: transparent;
+        }
+        #glow {
+            position: fixed;
+            top: 0; left: 0;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124,147,255,0.10), transparent 65%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ---------- content ---------- */
+        .wrap {
+            position: relative;
+            z-index: 3;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             text-align: center;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 60px 24px;
+            max-width: 660px;
+            margin: 0 auto;
         }
-        .container {
-            max-width: 600px;
-            padding: 20px;
-        }
+
+        header { margin-bottom: 12px; }
+
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
+            font-family: var(--serif);
+            font-weight: 700;
+            font-size: clamp(2.6rem, 8vw, 4.2rem);
+            letter-spacing: -0.03em;
+            margin: 0;
+            line-height: 1;
+            background: linear-gradient(110deg, #ffffff 20%, #9aa6ff 50%, #ffffff 80%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 6s linear infinite, nameIn 1s cubic-bezier(.2,.7,.2,1) both;
         }
-        p {
-            font-size: 1rem;
-            margin-bottom: 20px;
+        @keyframes shimmer {
+            to { background-position: 200% center; }
         }
-        .content {
-            margin-bottom: 40px;
+        @keyframes nameIn {
+            from { opacity: 0; transform: translateY(26px) scale(.97); filter: blur(6px); }
+            to   { opacity: 1; transform: none; filter: blur(0); }
         }
-        footer {
-            padding: 15px 0;
-            border-top: 1px solid var(--border-color);
+
+        .role {
+            font-family: var(--serif);
+            font-size: 0.8rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 18px;
         }
-        .social-links {
-            margin-bottom: 20px;
-        }
-        .social-links a {
-            display: inline-block;
-            margin: 0 12px;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            transition: color 0.3s ease;
-        }
-        .social-links a:hover {
-            color: var(--link-color);
-        }
-        .email {
-            font-size: 0.95rem;
-        }
-        .email a {
-            color: var(--text-color);
-            text-decoration: none;
-            border-bottom: 1px dotted var(--text-color);
-        }
-        .email a:hover {
-            color: var(--link-color);
-            border-bottom: 1px solid var(--link-color);
-        }
-        a {
-            color: var(--link-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        a:hover {
-            color: var(--link-hover-color);
-        }
+
         nav {
-            margin: 20px 0;
+            margin: 26px 0 0;
+            display: flex;
+            gap: 28px;
+            justify-content: center;
         }
         nav a {
-            margin: 0 15px;
-            font-size: 1.1rem;
-            color: var(--text-color);
+            position: relative;
+            font-family: var(--serif);
+            font-size: 0.78rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
             text-decoration: none;
-            transition: color 0.3s ease;
+            padding: 4px 0;
+            transition: color .3s ease;
         }
-        nav a:hover {
-            color: var(--link-color);
+        nav a::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: 0;
+            width: 100%; height: 1px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .35s cubic-bezier(.2,.7,.2,1);
         }
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
+        nav a:hover { color: var(--text); }
+        nav a:hover::after { transform: scaleX(1); }
+        nav a.active { color: var(--text); }
+
+        .content {
+            margin-top: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+        .content p {
+            margin: 0;
+            font-size: 1.02rem;
+            color: #cfcfcf;
+            font-weight: 300;
+        }
+
+        /* inline links */
+        .content a, .email a {
+            color: var(--text);
+            text-decoration: none;
+            position: relative;
+            white-space: nowrap;
+        }
+        .content a {
+            color: var(--accent);
+            font-weight: 400;
+            background: linear-gradient(var(--accent), var(--accent)) no-repeat;
+            background-position: 0 100%;
+            background-size: 100% 1px;
+            transition: background-size .3s cubic-bezier(.2,.7,.2,1), color .3s ease, text-shadow .3s ease;
+            padding-bottom: 1px;
+        }
+        .content a:hover {
+            color: #aab6ff;
+            background-size: 100% 2px;
+            text-shadow: 0 0 14px var(--accent-soft);
+        }
+
+        /* reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: revealUp .9s cubic-bezier(.2,.7,.2,1) forwards;
+        }
+        @keyframes revealUp { to { opacity: 1; transform: none; } }
+
+        footer {
+            margin-top: 56px;
+            padding-top: 28px;
+            border-top: 1px solid var(--line);
+            width: 100%;
+        }
+        .social-links { margin-bottom: 16px; display: flex; gap: 22px; justify-content: center; }
+        .social-links a {
+            color: var(--muted);
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: color .3s ease, transform .3s ease;
+            display: inline-block;
+        }
+        .social-links a:hover {
+            color: var(--text);
+            transform: translateY(-4px);
+        }
+        .email a {
+            font-size: 0.92rem;
+            color: var(--muted);
+            border-bottom: 1px dotted var(--faint);
+            padding-bottom: 1px;
+            transition: color .3s ease, border-color .3s ease;
+        }
+        .email a:hover { color: var(--accent); border-color: var(--accent); }
+
+        @media (hover: none), (pointer: coarse) {
+            body { cursor: auto; }
+            #cursor, #glow { display: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+            h1, .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+            #constellation, .grain { display: none; }
         }
     </style>
 </head>
 <body>
-<div class="container">
+<div class="aurora one"></div>
+<div class="aurora two"></div>
+<canvas id="constellation"></canvas>
+<div class="grain"></div>
+<div id="glow"></div>
+<div id="cursor"></div>
+
+<div class="wrap">
     <header>
-        <h1>Alvaro Molina</h1>
-        
-        <nav>
-            <a href="index.html">Home</a>
+        <h1 id="name" aria-label="Alvaro Molina">Alvaro Molina</h1>
+        <div class="role reveal" style="animation-delay:.9s">Engineer · Zürich, Switzerland</div>
+        <nav class="reveal" style="animation-delay:1.05s">
+            <a href="index.html" class="active">Home</a>
             <a href="writing.html">Writing</a>
         </nav>
     </header>
 
     <div class="content">
-        <p>I'm an Engineer based in Zürich, Switzerland.</p>
-        <p>
-            Currently, I spend most of my time working at <a href="https://teton.ai" target="_blank">teton.ai</a> primarily leading infrastructure and contributing to <a href="https://github.com/teton-ai/smith" target="_blank">smith</a> — an OSS Fleet Management System.
-            I also enjoy building <a href="https://dosei.io" target="_blank">Dosei</a>, a Local-First Kubernetes successor for developers.
+        <p class="reveal" style="animation-delay:1.2s">
+            Today I spend most of my time at <a href="https://teton.ai" target="_blank">teton.ai</a>, where I lead infrastructure and build <a href="https://github.com/teton-ai/smith" target="_blank">smith</a>, an open-source Fleet Management System. Independently, I'm building <a href="https://dosei.io" target="_blank">Dosei</a> — a local-first successor to Kubernetes, made for developers.
         </p>
-
-        <p>Previously, I've founded multiple startups, from bootstrapped ventures like Vexir Network, which I built at 19 and grew to 2.5 million registered users, to venture-backed companies like EnhanceDocs, where I raised funding from reputable investors like <a href="https://dcgross.com/" target="_blank">Daniel Gross</a>. I've served as Director of Engineering for <a href="https://nordcloud.com/" target="_blank">Nordcloud, an IBM Company</a> and held various engineering roles throughout my career.</p>
-
-        <p>
-            I'm passionate about endurance sports, and generally enjoy outdoor activities.
-            I hold a <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/power-boat-certificate" target="_blank">power boat license</a> and a
-            <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/certificate-of-competency-for-recreational-sailors" target="_blank">Certificate of Competency for recreational sailors</a>.
-            Eventually, I hope to become a certified private pilot.
+        <p class="reveal" style="animation-delay:1.5s">
+            Before this, I founded a handful of companies. I bootstrapped Vexir Network at 19 and grew it to 2.5 million registered users, then went on to build venture-backed ones like EnhanceDocs, backed by investors like <a href="https://dcgross.com/" target="_blank">Daniel Gross</a>. Along the way I served as Director of Engineering at <a href="https://nordcloud.com/" target="_blank">Nordcloud, an IBM Company</a>.
+        </p>
+        <p class="reveal" style="animation-delay:1.65s">
+            Outside of work, I'm drawn to endurance sports and the outdoors. I hold a <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/power-boat-certificate" target="_blank">power boat license</a> and a
+            <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/certificate-of-competency-for-recreational-sailors" target="_blank">Certificate of Competency for recreational sailors</a> — and one day, I intend to earn my private pilot's license.
         </p>
     </div>
 
-    <footer>
+    <footer class="reveal" style="animation-delay:1.8s">
         <div class="social-links">
-<!--            <a href="https://twitter.com/Alw3ys" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>-->
             <a href="https://www.linkedin.com/in/alvaro-molina" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
             <a href="https://github.com/Alw3ys" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
         </div>
-
-        <div class="email">
-            <a href="mailto:a@molinaa.com">a@molinaa.com</a>
-        </div>
+        <div class="email"><a href="mailto:a@molinaa.com">a@molinaa.com</a></div>
     </footer>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const htmlElement = document.documentElement;
+  // ---- custom cursor + glow ----
+  (function () {
+    const cursor = document.getElementById('cursor');
+    const glow = document.getElementById('glow');
+    if (!cursor) return;
+    let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+    let gx = mx, gy = my;
 
-    // Function to apply theme based on system preference
-    function applySystemTheme() {
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      htmlElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+    });
+
+    function tick() {
+      gx += (mx - gx) * 0.08; gy += (my - gy) * 0.08;
+      glow.style.transform = `translate(${gx}px, ${gy}px) translate(-50%, -50%)`;
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    document.querySelectorAll('a').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+  })();
+
+  // ---- interactive constellation ----
+  (function () {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    const canvas = document.getElementById('constellation');
+    const ctx = canvas.getContext('2d');
+    let w, h, dpr, particles = [];
+    const mouse = { x: -9999, y: -9999 };
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.width = innerWidth * dpr;
+      h = canvas.height = innerHeight * dpr;
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+      const count = Math.min(90, Math.floor((innerWidth * innerHeight) / 16000));
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.25 * dpr,
+        vy: (Math.random() - 0.5) * 0.25 * dpr,
+        r: (Math.random() * 1.4 + 0.6) * dpr
+      }));
     }
 
-    // Apply system theme on load
-    applySystemTheme();
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX * dpr; mouse.y = e.clientY * dpr; });
+    window.addEventListener('mouseout', () => { mouse.x = -9999; mouse.y = -9999; });
 
-    // Listen for system theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      applySystemTheme();
-    });
-  });
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      const linkDist = 130 * dpr;
+      const mouseDist = 180 * dpr;
+
+      for (const p of particles) {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+
+        // gentle attraction toward cursor
+        const dxm = mouse.x - p.x, dym = mouse.y - p.y;
+        const dm = Math.hypot(dxm, dym);
+        if (dm < mouseDist) {
+          const f = (1 - dm / mouseDist) * 0.4;
+          p.x += (dxm / dm) * f;
+          p.y += (dym / dm) * f;
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(180,190,255,0.55)';
+        ctx.fill();
+      }
+
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const a = particles[i], b = particles[j];
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < linkDist) {
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(124,147,255,${0.16 * (1 - d / linkDist)})`;
+            ctx.lineWidth = dpr * 0.6;
+            ctx.stroke();
+          }
+        }
+        // link to cursor
+        const a = particles[i];
+        const dc = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+        if (dc < mouseDist) {
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.strokeStyle = `rgba(160,175,255,${0.25 * (1 - dc / mouseDist)})`;
+          ctx.lineWidth = dpr * 0.6;
+          ctx.stroke();
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    draw();
+  })();
 </script>
 </body>
 </html>
