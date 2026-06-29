@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alvaro Molina</title>
-    <meta name="description" content="Alvaro Molina — Engineer based in Zürich, Switzerland.">
+    <meta name="description" content="Alvaro Molina — Engineer based in Zürich, Switzerland. A timeline.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -129,18 +129,12 @@
         .wrap {
             position: relative;
             z-index: 3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 60px 24px;
-            max-width: 660px;
+            max-width: 680px;
             margin: 0 auto;
+            padding: 96px 24px 48px;
         }
 
-        header { margin-bottom: 12px; }
+        header { text-align: center; margin-bottom: 72px; }
 
         h1 {
             font-family: var(--serif);
@@ -203,37 +197,130 @@
         nav a:hover { color: var(--text); }
         nav a:hover::after { transform: scaleX(1); }
         nav a.active { color: var(--text); }
+        nav a.active::after { transform: scaleX(1); background: var(--faint); }
 
-        .content {
-            margin-top: 48px;
-            display: flex;
-            flex-direction: column;
-            gap: 22px;
+        /* ---------- horizontal timeline ---------- */
+        .timeline-shell {
+            position: relative;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
         }
-        .content p {
-            margin: 0;
-            font-size: 1.02rem;
-            color: #cfcfcf;
+        .timeline-viewport {
+            position: relative;
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            /* fade the carousel toward both edges of the screen */
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+                    mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+        }
+        .timeline-viewport::-webkit-scrollbar { display: none; }
+        .timeline-viewport.dragging { user-select: none; }
+
+        .timeline-track {
+            position: relative;
+            display: flex;
+            width: max-content;
+            min-height: 440px;
+            padding: 0 110px;
+        }
+        /* dotted axis line */
+        .timeline-track::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            top: 92px;
+            border-top: 1px dashed var(--line);
+        }
+
+        /* AGE / YEAR row labels — fixed at left, above the edge fade */
+        .tl-labels {
+            position: absolute;
+            left: 24px; top: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .tl-labels span {
+            position: absolute;
+            left: 0;
+            font-family: var(--serif);
+            font-size: 0.58rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+        .tl-labels .l-age  { top: 8px; }
+        .tl-labels .l-year { top: 36px; }
+
+        .yr {
+            position: relative;
+            flex: 0 0 220px;
+        }
+        .yr .age {
+            position: absolute;
+            top: 4px; left: 0;
+            font-family: var(--serif);
+            font-size: 0.74rem;
+            letter-spacing: 0.03em;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+            transition: color .3s ease;
+        }
+        .yr .year {
+            position: absolute;
+            top: 30px; left: 0;
+            font-family: var(--serif);
+            font-size: 1.12rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            color: #c4c4c4;
+            font-variant-numeric: tabular-nums;
+            transition: color .3s ease;
+        }
+        .yr.event .year { color: var(--text); }
+        .yr.event .age  { color: #c4c4c4; }
+
+        /* tick hanging from the dotted line */
+        .yr .tick {
+            position: absolute;
+            top: 92px; left: 1px;
+            width: 1px; height: 11px;
+            background: var(--faint);
+            transition: background .3s ease, height .3s ease;
+        }
+        .yr.event .tick { background: var(--accent); height: 16px; }
+
+        /* event copy below the axis */
+        .yr .events {
+            position: absolute;
+            top: 124px; left: 0;
+            width: 196px;
+        }
+        .yr .events p {
+            margin: 0 0 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--muted);
             font-weight: 300;
         }
 
         /* inline links */
-        .content a, .email a {
-            color: var(--text);
-            text-decoration: none;
-            position: relative;
-            white-space: nowrap;
-        }
-        .content a {
+        .email a { text-decoration: none; position: relative; }
+        .yr .events a {
             color: var(--accent);
             font-weight: 400;
+            text-decoration: none;
+            white-space: nowrap;
             background: linear-gradient(var(--accent), var(--accent)) no-repeat;
             background-position: 0 100%;
             background-size: 100% 1px;
             transition: background-size .3s cubic-bezier(.2,.7,.2,1), color .3s ease, text-shadow .3s ease;
             padding-bottom: 1px;
         }
-        .content a:hover {
+        .yr .events a:hover {
             color: #aab6ff;
             background-size: 100% 2px;
             text-shadow: 0 0 14px var(--accent-soft);
@@ -248,10 +335,11 @@
         @keyframes revealUp { to { opacity: 1; transform: none; } }
 
         footer {
-            margin-top: 56px;
+            margin-top: 64px;
             padding-top: 28px;
             border-top: 1px solid var(--line);
             width: 100%;
+            text-align: center;
         }
         .social-links { margin-bottom: 16px; display: flex; gap: 22px; justify-content: center; }
         .social-links a {
@@ -273,6 +361,93 @@
             transition: color .3s ease, border-color .3s ease;
         }
         .email a:hover { color: var(--accent); border-color: var(--accent); }
+
+        @media (max-width: 480px) {
+            .yr { flex: 0 0 180px; }
+            .yr .events { width: 162px; }
+        }
+
+        /* ---------- vertical timeline on mobile ---------- */
+        @media (max-width: 600px) {
+            .timeline-shell {
+                width: 100%;
+                margin-left: 0;
+            }
+            .tl-labels { display: none; }
+            .timeline-viewport {
+                overflow-x: hidden;
+                overflow-y: auto;
+                max-height: 64vh;
+                /* fade toward the top and bottom edges of the band */
+                -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 7%, #000 93%, transparent 100%);
+                        mask-image: linear-gradient(to bottom, transparent 0, #000 7%, #000 93%, transparent 100%);
+            }
+            .timeline-track {
+                /* grow upward like a tree: birth (age 0) at the bottom,
+                   the present at the top. DOM order stays born→present so
+                   the desktop row is untouched. */
+                flex-direction: column-reverse;
+                width: 100%;
+                min-height: 0;
+                padding: 18px 0;
+            }
+            /* the axis becomes a vertical dashed rail down the left */
+            .timeline-track::before {
+                top: 8px; bottom: 8px;
+                left: 18px; right: auto;
+                border-top: none;
+                border-left: 1px dashed var(--line);
+            }
+            /* every year stacks down the rail; empty years stay lighter */
+            .yr {
+                flex: 0 0 auto;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 0 0 20px 44px;
+            }
+            .yr.event { padding-bottom: 30px; }
+            .yr:last-child { padding-bottom: 0; }
+
+            .yr .year {
+                position: static;
+                order: 1;
+                font-size: 1rem;
+            }
+            .yr.event .year { font-size: 1.18rem; }
+            .yr .age {
+                position: static;
+                order: 2;
+                margin: 3px 0 0;
+                font-size: 0.62rem;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+            }
+            .yr.event .age { margin-bottom: 12px; }
+            .yr .age::before { content: 'Age '; }
+
+            /* ticks become nodes sitting on the rail, level with the year */
+            .yr .tick {
+                position: absolute;
+                top: 8px; left: 15px;
+                width: 7px; height: 7px;
+                border-radius: 50%;
+                background: var(--faint);
+                box-shadow: 0 0 0 4px var(--bg);
+            }
+            .yr.event .tick {
+                top: 7px; left: 14px;
+                width: 9px; height: 9px;
+                background: var(--accent);
+            }
+            .yr .events {
+                position: static;
+                order: 3;
+                width: 100%;
+            }
+            .yr .events p { margin-bottom: 10px; }
+            .yr .events p:last-child { margin-bottom: 0; }
+        }
 
         @media (hover: none), (pointer: coarse) {
             body { cursor: auto; }
@@ -301,27 +476,30 @@
 <div class="wrap">
     <header>
         <h1 id="name" aria-label="Alvaro Molina">Alvaro Molina</h1>
-        <div class="role reveal" style="animation-delay:.9s">Engineer · Zürich, Switzerland</div>
         <nav class="reveal" style="animation-delay:1.05s">
             <a href="index.html" class="active">Home</a>
             <a href="writing.html">Writing</a>
+            <a href="about.html">About</a>
         </nav>
     </header>
 
-    <div class="content">
-        <p class="reveal" style="animation-delay:1.2s">
-            Today I spend most of my time at <a href="https://teton.ai" target="_blank">teton.ai</a>, where I lead infrastructure and build <a href="https://github.com/teton-ai/smith" target="_blank">smith</a>, an open-source Fleet Management System. Independently, I'm building <a href="https://dosei.io" target="_blank">Dosei</a> — a local-first successor to Kubernetes, made for developers.
-        </p>
-        <p class="reveal" style="animation-delay:1.5s">
-            Before this, I founded a handful of companies. I bootstrapped Vexir Network at 19 and grew it to 2.5 million registered users, then went on to build venture-backed ones like EnhanceDocs, backed by investors like <a href="https://dcgross.com/" target="_blank">Daniel Gross</a>. Along the way I served as Director of Engineering at <a href="https://nordcloud.com/" target="_blank">Nordcloud, an IBM Company</a>.
-        </p>
-        <p class="reveal" style="animation-delay:1.65s">
-            Outside of work, I'm drawn to endurance sports and the outdoors. I hold a <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/power-boat-certificate" target="_blank">power boat license</a> and a
-            <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/certificate-of-competency-for-recreational-sailors" target="_blank">Certificate of Competency for recreational sailors</a> — and one day, I intend to earn my private pilot's license.
-        </p>
-    </div>
+    <main>
+        <!--
+          Horizontal life timeline. Years/ages and the ruler are generated in JS
+          from the EVENTS map below; born year = 1999. Edit EVENTS to change copy.
+        -->
+        <div class="timeline-shell reveal" style="animation-delay:1.2s">
+            <div class="tl-labels">
+                <span class="l-age">Age</span>
+                <span class="l-year">Year</span>
+            </div>
+            <div class="timeline-viewport" id="tlViewport">
+                <div class="timeline-track" id="tlTrack"></div>
+            </div>
+        </div>
+    </main>
 
-    <footer class="reveal" style="animation-delay:1.8s">
+    <footer class="reveal" style="animation-delay:1.85s">
         <div class="social-links">
             <a href="https://www.linkedin.com/in/alvaro-molina" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
             <a href="https://github.com/Alw3ys" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
@@ -331,6 +509,202 @@
 </div>
 
 <script>
+  // ---- horizontal life timeline ----
+  (function () {
+    const BORN = 1999;
+    // year -> array of HTML paragraphs. Add/edit freely.
+    const EVENTS = {
+      1999: ["Born in Málaga, Spain."],
+      2005: ["Started primary school.", "Picked up golf around the same time."],
+      2011: ["Moved on to secondary school.", "Got my first laptop and taught myself to program."],
+      2012: [
+        'Built a custom <a href="https://www.sa-mp.mp/" target="_blank">SA-MP</a> server after learning <a href="https://de.wikipedia.org/wiki/Pawn_(Programmiersprache)" target="_blank">Pawn</a>.',
+        'Soon after, picked up Java and built my first Minecraft servers.'
+      ],
+      2015: ["Moved to Almería, Spain, and joined the local running track team.", "Started Vexir Network, an online video game server."],
+      2016: ["Moved back to Málaga, Spain.", "Met one of my best friends, Adrian Sampson."],
+      2017: ["Sold Vexir Network after growing it to +2,500,000 registered users."],
+      2018: [
+        'Got my first "real" job as a Software Engineer and moved to Sevilla, Spain, working on the <a href="https://www.olympics.com/en/" target="_blank">Olympic Games</a> software infrastructure.',
+        'Later moved to Barcelona, Spain, to work at <a href="https://www.haufegroup.com/" target="_blank">Haufe Group</a> — a bit of everything: mobile apps, backends, infrastructure.'
+      ],
+      2020: ['Joined <a href="https://nordcloud.com/" target="_blank">Nordcloud</a>, an IBM Company, as a Cloud Architect, and moved to Copenhagen, Denmark.'],
+      2022: ['Became Director of Engineering at <a href="https://nordcloud.com/" target="_blank">Nordcloud</a>, an IBM Company.'],
+      2023: ['Founded EnhanceDocs, a venture-backed company, backed by investors like <a href="https://dcgross.com/" target="_blank">Daniel Gross</a>.'],
+      2024: [
+        'Wound down EnhanceDocs.',
+        'Joined <a href="https://teton.ai" target="_blank">Teton</a> to lead infrastructure and build <a href="https://github.com/teton-ai/smith" target="_blank">smith</a>, an open-source Fleet Management System.'
+      ],
+      2025: [
+        'Met my girlfriend and life partner, Theresa Eder.',
+        'Crossed my first <a href="writing/beyond-the-finish-line-what-ironman-really-taught-me.html">IRONMAN</a> finish line in 10:01:46.',
+        'Moved to Zürich, Switzerland.'
+      ]
+    };
+
+    const track = document.getElementById('tlTrack');
+    const viewport = document.getElementById('tlViewport');
+    if (!track || !viewport) return;
+
+    const eventYears = Object.keys(EVENTS).map(Number);
+    const lastYear = Math.max(new Date().getFullYear(), ...eventYears);
+
+    for (let y = BORN; y <= lastYear; y++) {
+      const col = document.createElement('div');
+      const has = EVENTS[y];
+      col.className = has ? 'yr event' : 'yr';
+      let html = '<span class="age">' + (y - BORN) + '</span>'
+               + '<span class="year">' + y + '</span>'
+               + '<span class="tick"></span>';
+      if (has) html += '<div class="events">' + has.map(p => '<p>' + p + '</p>').join('') + '</div>';
+      col.innerHTML = html;
+      track.appendChild(col);
+    }
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const maxScroll = () => track.scrollWidth - viewport.clientWidth;
+    const clamp = v => Math.max(0, Math.min(maxScroll(), v));
+
+    // a user gesture cancels the intro animation and any momentum
+    let introRAF = 0, wheelRAF = 0, inertiaRAF = 0, interrupted = false;
+    function stopAll() {
+      interrupted = true;
+      cancelAnimationFrame(introRAF);
+      cancelAnimationFrame(wheelRAF);
+      cancelAnimationFrame(inertiaRAF);
+      wheelRAF = inertiaRAF = 0;
+    }
+
+    // mobile lays the track out as a vertical column scrolled by the page itself
+    const isVertical = () => /^column/.test(getComputedStyle(track).flexDirection);
+    const ease = t => 1 - Math.pow(1 - t, 3); // ease-out cubic
+
+    // ---- intro auto-scroll: from age 0 (birth) to the latest year ----
+    function autoScroll() {
+      if (isVertical()) return autoScrollPage();
+      const target = maxScroll();
+      if (target <= 0) return;
+      if (reduce) { viewport.scrollLeft = target; return; }
+      viewport.scrollLeft = 0;
+      const duration = 2200, start = performance.now();
+      function step(now) {
+        if (interrupted) return;
+        const t = Math.min((now - start) / duration, 1);
+        viewport.scrollLeft = target * ease(t);
+        if (t < 1) introRAF = requestAnimationFrame(step);
+      }
+      introRAF = requestAnimationFrame(() => { introRAF = requestAnimationFrame(step); });
+    }
+
+    // ---- vertical intro: grow from birth (bottom) up to the present (top) ----
+    // column-reverse keeps scrollTop 0 = top (present), max = bottom (birth),
+    // so we start scrolled to the bottom and ease up to reveal the tree growing.
+    function autoScrollPage() {
+      const bottom = viewport.scrollHeight - viewport.clientHeight;
+      if (bottom <= 2) return;
+      if (reduce) { viewport.scrollTop = 0; return; }
+      viewport.scrollTop = bottom;
+      const duration = 2600, start = performance.now();
+      function step(now) {
+        if (interrupted) return;
+        const t = Math.min((now - start) / duration, 1);
+        viewport.scrollTop = bottom * (1 - ease(t));
+        if (t < 1) introRAF = requestAnimationFrame(step);
+      }
+      introRAF = requestAnimationFrame(() => { introRAF = requestAnimationFrame(step); });
+    }
+    if (document.readyState === 'complete') autoScroll();
+    else window.addEventListener('load', autoScroll);
+
+    // any real input during the vertical intro hands scrolling back to the user
+    ['touchstart', 'wheel', 'keydown'].forEach(ev =>
+      window.addEventListener(ev, () => { if (isVertical()) stopAll(); }, { passive: true }));
+
+    // ---- mouse wheel -> smoothed horizontal scroll ----
+    let wheelTarget = viewport.scrollLeft;
+    function wheelLoop() {
+      const cur = viewport.scrollLeft;
+      const diff = wheelTarget - cur;
+      if (Math.abs(diff) < 0.5) { viewport.scrollLeft = wheelTarget; wheelRAF = 0; return; }
+      viewport.scrollLeft = cur + diff * 0.18;
+      wheelRAF = requestAnimationFrame(wheelLoop);
+    }
+    viewport.addEventListener('wheel', e => {
+      // vertical (mobile) layout isn't horizontally scrollable — let the page scroll
+      if (maxScroll() <= 0) return;
+      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (!delta) return;
+      e.preventDefault();
+      stopAll(); interrupted = false;
+      wheelTarget = clamp((wheelRAF ? wheelTarget : viewport.scrollLeft) + delta);
+      if (reduce) { viewport.scrollLeft = wheelTarget; return; }
+      if (!wheelRAF) wheelRAF = requestAnimationFrame(wheelLoop);
+    }, { passive: false });
+
+    // ---- click-drag panning (mouse only; touch keeps native scroll) ----
+    // Capture the pointer only after real movement, so a plain click still
+    // reaches links instead of being swallowed by the scroller. Pans along
+    // whichever axis the timeline is laid out on (horizontal / vertical).
+    let down = false, dragging = false, pid = null, vert = false;
+    let startPos = 0, startScroll = 0, moved = false;
+    let lastPos = 0, lastT = 0, velocity = 0;
+    const dragMax = () => vert ? viewport.scrollHeight - viewport.clientHeight
+                               : track.scrollWidth - viewport.clientWidth;
+    const dragClamp = v => Math.max(0, Math.min(dragMax(), v));
+    const scrollPos = () => vert ? viewport.scrollTop : viewport.scrollLeft;
+    const setScroll = v => { if (vert) viewport.scrollTop = v; else viewport.scrollLeft = v; };
+
+    viewport.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      vert = isVertical();
+      down = true; dragging = false; moved = false; pid = e.pointerId;
+      const p = vert ? e.clientY : e.clientX;
+      startPos = p; startScroll = scrollPos();
+      lastPos = p; lastT = e.timeStamp; velocity = 0;
+    });
+    viewport.addEventListener('pointermove', e => {
+      if (!down) return;
+      const p = vert ? e.clientY : e.clientX;
+      const d = p - startPos;
+      if (!dragging) {
+        if (Math.abs(d) <= 4) return;       // below threshold — let clicks through
+        dragging = true; moved = true;
+        stopAll(); interrupted = false;     // a real drag cancels intro/momentum
+        try { viewport.setPointerCapture(pid); } catch (_) {}
+        viewport.classList.add('dragging');
+      }
+      setScroll(dragClamp(startScroll - d));
+      const dt = e.timeStamp - lastT;
+      if (dt > 0) velocity = (p - lastPos) / dt; // px/ms
+      lastPos = p; lastT = e.timeStamp;
+    });
+    function endDrag() {
+      if (!down) return;
+      down = false;
+      const wasDragging = dragging;
+      dragging = false;
+      viewport.classList.remove('dragging');
+      if (!wasDragging) return;             // plain click — nothing to settle
+      wheelTarget = viewport.scrollLeft;
+      if (reduce || Math.abs(velocity) < 0.05) return;
+      let v = velocity * 16; // approx px/frame
+      function inertia() {
+        v *= 0.92;
+        const next = dragClamp(scrollPos() - v);
+        setScroll(next);
+        if (Math.abs(v) > 0.4 && next > 0 && next < dragMax()) inertiaRAF = requestAnimationFrame(inertia);
+        else inertiaRAF = 0;
+      }
+      inertiaRAF = requestAnimationFrame(inertia);
+    }
+    viewport.addEventListener('pointerup', endDrag);
+    viewport.addEventListener('pointercancel', endDrag);
+    // swallow the click that ends a drag so links don't fire
+    viewport.addEventListener('click', e => {
+      if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+    }, true);
+  })();
+
   // ---- custom cursor + glow ----
   (function () {
     const cursor = document.getElementById('cursor');
