@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #060606;
@@ -20,6 +20,7 @@
             --accent-soft: rgba(124, 147, 255, 0.35);
             --serif: 'Space Grotesk', sans-serif;
             --sans: 'Inter', -apple-system, sans-serif;
+            --hand: 'Caveat', cursive;
         }
 
         * { box-sizing: border-box; }
@@ -326,6 +327,238 @@
             text-shadow: 0 0 14px var(--accent-soft);
         }
 
+        /* ---------- flashback memories ---------- */
+        /* a small "tap into the memory" hint on years that carry photos */
+        .mem-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+            font-family: var(--serif);
+            font-size: 0.56rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--faint);
+            transition: color .35s ease, text-shadow .35s ease;
+        }
+        .mem-hint i { font-size: 0.62rem; }
+        .yr.has-memory .year { cursor: none; }
+        .yr.has-memory:hover .mem-hint {
+            color: var(--accent);
+            text-shadow: 0 0 12px var(--accent-soft);
+        }
+
+        /* the floating layer that follows the cursor; a zero-size anchor point */
+        .flashback {
+            position: fixed;
+            left: 0; top: 0;
+            z-index: 60;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .35s ease;
+        }
+        .flashback.show { opacity: 1; }
+
+        /* each photo is a faded polaroid that blooms into focus + colour */
+        .flashback .polaroid {
+            position: absolute;
+            width: 178px;
+            padding: 9px 9px 28px;
+            background: linear-gradient(160deg, #f4f1e9, #ddd7c9);
+            border-radius: 3px;
+            box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55),
+                        0 0 0 1px rgba(255, 255, 255, 0.05);
+            opacity: 0;
+            filter: blur(12px) saturate(0) brightness(1.3);
+            transform: translate(-50%, -50%)
+                       translate(var(--dx, 0), calc(var(--dy, 0) + 14px))
+                       rotate(var(--rot, 0deg)) scale(0.7);
+            transition: opacity .5s ease,
+                        filter .8s ease,
+                        transform .6s cubic-bezier(.2, .8, .2, 1);
+            transition-delay: var(--delay, 0ms);
+        }
+        .flashback.show .polaroid {
+            opacity: 1;
+            filter: blur(0) saturate(1) brightness(1);
+            transform: translate(-50%, -50%)
+                       translate(var(--dx, 0), var(--dy, 0))
+                       rotate(var(--rot, 0deg)) scale(1);
+        }
+        .flashback .polaroid img {
+            display: block;
+            width: 100%;
+            height: 148px;
+            object-fit: cover;
+            border-radius: 1px;
+            background: #1a1a1a;
+        }
+        /* faint warm light-leak over the print, like an old photo */
+        .flashback .polaroid::after {
+            content: '';
+            position: absolute;
+            inset: 9px 9px 28px;
+            border-radius: 1px;
+            background: radial-gradient(circle at 75% 15%, rgba(255, 220, 150, 0.28), transparent 55%);
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+        .flashback .polaroid .cap {
+            margin-top: 9px;
+            font-family: var(--serif);
+            font-size: 0.62rem;
+            letter-spacing: 0.04em;
+            color: #36312a;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        /* ---------- jump-in: full-screen memory viewer ---------- */
+        body.mv-locked { overflow: hidden; }
+
+        .memory-view {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .55s ease, visibility .55s ease;
+        }
+        .memory-view.open { opacity: 1; visibility: visible; }
+
+        .mv-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(4, 4, 6, 0.82);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .mv-stage {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 92vw;
+            padding: 0 24px;
+        }
+        .mv-year {
+            font-family: var(--serif);
+            font-weight: 700;
+            font-size: clamp(2.6rem, 9vw, 6rem);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 22px;
+            background: linear-gradient(110deg, #ffffff 20%, #9aa6ff 50%, #ffffff 80%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.92;
+        }
+
+        .mv-frame {
+            margin: 0;
+            padding: 14px 14px 46px;
+            background: linear-gradient(160deg, #f4f1e9, #ddd7c9);
+            border-radius: 4px;
+            box-shadow: 0 44px 90px rgba(0, 0, 0, 0.6),
+                        0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+        .mv-frame.enter { animation: mvIn .6s cubic-bezier(.2, .8, .2, 1); }
+        @keyframes mvIn {
+            from { opacity: 0; transform: scale(.92) translateY(10px); filter: blur(14px) saturate(0); }
+            to   { opacity: 1; transform: none; filter: blur(0) saturate(1); }
+        }
+        .mv-frame img {
+            display: block;
+            max-width: min(72vw, 580px);
+            max-height: 56vh;
+            object-fit: cover;
+            border-radius: 2px;
+            background: #1a1a1a;
+        }
+        .mv-frame figcaption {
+            margin-top: 14px;
+            text-align: center;
+            font-family: var(--serif);
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            color: #36312a;
+        }
+        /* handwritten note that fades in beneath the photo */
+        .mv-note {
+            max-width: min(80vw, 460px);
+            margin-top: 22px;
+            font-family: var(--hand);
+            font-weight: 500;
+            font-size: 1.5rem;
+            line-height: 1.4;
+            text-align: center;
+            color: #d7d2c4;
+            opacity: 0.92;
+        }
+        .mv-note:empty { display: none; }
+        .mv-note.enter { animation: noteIn .6s ease .22s both; }
+        @keyframes noteIn {
+            from { opacity: 0; transform: translateY(9px); }
+            to   { opacity: 0.92; transform: none; }
+        }
+        .mv-meta {
+            margin-top: 22px;
+            font-family: var(--serif);
+            font-size: 0.66rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .mv-nav, .mv-close {
+            position: absolute;
+            z-index: 3;
+            background: rgba(12, 12, 14, 0.4);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            cursor: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color .3s ease, border-color .3s ease, transform .3s ease;
+        }
+        .mv-nav {
+            top: 50%;
+            width: 54px; height: 54px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            transform: translateY(-50%);
+        }
+        .mv-nav.prev { left: 4vw; }
+        .mv-nav.next { right: 4vw; }
+        .mv-nav:hover { color: var(--text); border-color: var(--accent-soft); }
+        .mv-close {
+            top: 26px; right: 30px;
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+        }
+        .mv-close:hover { color: var(--text); border-color: var(--accent-soft); transform: rotate(90deg); }
+
+        @media (hover: none), (pointer: coarse) {
+            .mv-nav, .mv-close { cursor: pointer; }
+        }
+        @media (max-width: 600px) {
+            .mv-nav { width: 44px; height: 44px; font-size: 1.2rem; }
+            .mv-nav.prev { left: 2vw; }
+            .mv-nav.next { right: 2vw; }
+            .mv-close { top: 16px; right: 16px; width: 40px; height: 40px; }
+            .mv-frame img { max-width: 80vw; max-height: 50vh; }
+        }
+
         /* reveal */
         .reveal {
             opacity: 0;
@@ -361,6 +594,33 @@
             transition: color .3s ease, border-color .3s ease;
         }
         .email a:hover { color: var(--accent); border-color: var(--accent); }
+
+        /* floating soundtrack toggle (home page only) */
+        .sound-toggle {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            z-index: 50;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid var(--accent-soft);
+            background: rgba(12, 12, 14, 0.6);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            color: var(--muted);
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color .3s ease, border-color .3s ease, transform .3s ease;
+        }
+        .sound-toggle:hover { color: var(--text); transform: scale(1.06); }
+        .sound-toggle.playing { color: var(--accent); }
+        @media (max-width: 600px) {
+            .sound-toggle { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+        }
 
         @media (max-width: 480px) {
             .yr { flex: 0 0 180px; }
@@ -542,6 +802,23 @@
       ]
     };
 
+    // Flashback photos. year -> [{ src, cap, note }]. Hovering a year surfaces these
+    // as polaroids that bloom into focus; clicking steps inside a full-screen viewer
+    // where each photo carries a handwritten note. `note` is optional. A year can
+    // have a memory even with no event copy. Add more by dropping a file in photos/.
+    const MEMORIES = {
+      2000: [{ src: 'photos/1-year.jpg', cap: 'One year old',
+        note: 'before any of the rest of this.' }],
+      2022: [{ src: 'photos/director.jpeg', cap: 'Director of Engineering',
+        note: 'somehow leading the room I used to be the youngest in.' }],
+      2025: [
+        { src: 'photos/finish-line.JPG', cap: '10:01:46',
+          note: 'every early morning was worth this one line.' },
+        { src: 'photos/theresa.jpg', cap: 'Theresa',
+          note: 'the best thing this year gave me.' }
+      ]
+    };
+
     const track = document.getElementById('tlTrack');
     const viewport = document.getElementById('tlViewport');
     if (!track || !viewport) return;
@@ -552,11 +829,18 @@
     for (let y = BORN; y <= lastYear; y++) {
       const col = document.createElement('div');
       const has = EVENTS[y];
-      col.className = has ? 'yr event' : 'yr';
+      const mem = MEMORIES[y];
+      col.className = (has || mem) ? 'yr event' : 'yr';
+      if (mem) { col.classList.add('has-memory'); col.dataset.year = y; }
       let html = '<span class="age">' + (y - BORN) + '</span>'
                + '<span class="year">' + y + '</span>'
                + '<span class="tick"></span>';
-      if (has) html += '<div class="events">' + has.map(p => '<p>' + p + '</p>').join('') + '</div>';
+      if (has || mem) {
+        html += '<div class="events">';
+        if (has) html += has.map(p => '<p>' + p + '</p>').join('');
+        if (mem) html += '<span class="mem-hint"><i class="fas fa-camera-retro"></i>Step inside</span>';
+        html += '</div>';
+      }
       col.innerHTML = html;
       track.appendChild(col);
     }
@@ -564,6 +848,139 @@
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const maxScroll = () => track.scrollWidth - viewport.clientWidth;
     const clamp = v => Math.max(0, Math.min(maxScroll(), v));
+
+    // ---- flashback memories: bloom photos near the cursor on hover ----
+    // Desktop / fine-pointer only — needs real hover, and we respect reduced motion.
+    let hideFlashback = () => {};
+    if (window.matchMedia('(hover: hover)').matches && !reduce) {
+      const cursor = document.getElementById('cursor');
+      const fb = document.createElement('div');
+      fb.className = 'flashback';
+      document.body.appendChild(fb);
+
+      // preload so the first hover blooms cleanly instead of popping in
+      Object.values(MEMORIES).flat().forEach(m => { const i = new Image(); i.src = m.src; });
+
+      function build(photos) {
+        const n = photos.length;
+        fb.innerHTML = photos.map((p, i) => {
+          const off = i - (n - 1) / 2;       // spread around centre
+          const dx = Math.round(off * 116);
+          const dy = -Math.round(Math.abs(off) * 18); // lift the outer prints
+          const rot = (off * 7 + (i % 2 ? 1.5 : -1.5)).toFixed(1);
+          return '<figure class="polaroid" style="--dx:' + dx + 'px;--dy:' + dy
+               + 'px;--rot:' + rot + 'deg;--delay:' + (i * 70) + 'ms">'
+               + '<img src="' + p.src + '" alt="" draggable="false">'
+               + '<figcaption class="cap">' + p.cap + '</figcaption></figure>';
+        }).join('');
+      }
+      // park the stack above the cursor, or below it near the top of the screen
+      function place(e) {
+        const lift = e.clientY < 320 ? 150 : -150;
+        fb.style.transform = 'translate(' + e.clientX + 'px,' + (e.clientY + lift) + 'px)';
+      }
+      hideFlashback = () => { fb.classList.remove('show'); cursor && cursor.classList.remove('hover'); };
+
+      track.querySelectorAll('.yr.has-memory').forEach(col => {
+        const photos = MEMORIES[col.dataset.year];
+        col.addEventListener('mouseenter', e => {
+          build(photos); place(e);
+          fb.classList.add('show');
+          cursor && cursor.classList.add('hover');
+        });
+        col.addEventListener('mousemove', place);
+        col.addEventListener('mouseleave', hideFlashback);
+      });
+    }
+
+    // ---- jump in: a full-screen viewer you can wander through, photo by photo ----
+    (function setupMemoryView() {
+      // every photo, flattened in chronological order
+      const slides = [];
+      Object.keys(MEMORIES).map(Number).sort((a, b) => a - b).forEach(y =>
+        MEMORIES[y].forEach(p => slides.push({ year: y, src: p.src, cap: p.cap, note: p.note || '' })));
+      if (!slides.length) return;
+
+      const cursor = document.getElementById('cursor');
+      const view = document.createElement('div');
+      view.className = 'memory-view';
+      view.setAttribute('role', 'dialog');
+      view.setAttribute('aria-label', 'Memory viewer');
+      view.innerHTML =
+        '<div class="mv-backdrop"></div>' +
+        '<button class="mv-nav prev" aria-label="Previous memory">‹</button>' +
+        '<button class="mv-nav next" aria-label="Next memory">›</button>' +
+        '<button class="mv-close" aria-label="Close">×</button>' +
+        '<div class="mv-stage">' +
+          '<div class="mv-year"></div>' +
+          '<figure class="mv-frame"><img alt=""><figcaption></figcaption></figure>' +
+          '<p class="mv-note"></p>' +
+          '<div class="mv-meta"></div>' +
+        '</div>';
+      document.body.appendChild(view);
+
+      const elYear = view.querySelector('.mv-year');
+      const elImg = view.querySelector('.mv-frame img');
+      const elCap = view.querySelector('.mv-frame figcaption');
+      const elFrame = view.querySelector('.mv-frame');
+      const elNote = view.querySelector('.mv-note');
+      const elMeta = view.querySelector('.mv-meta');
+      let idx = 0, isOpen = false;
+
+      function render() {
+        const s = slides[idx];
+        elYear.textContent = s.year;
+        elImg.src = s.src;
+        elCap.textContent = s.cap;
+        elNote.textContent = s.note;
+        elMeta.textContent = (idx + 1) + ' / ' + slides.length;
+        elFrame.classList.remove('enter');
+        elNote.classList.remove('enter');
+        void elFrame.offsetWidth;        // restart the bloom + note animation
+        elFrame.classList.add('enter');
+        elNote.classList.add('enter');
+      }
+      function openAt(i) {
+        idx = (i + slides.length) % slides.length;
+        isOpen = true;
+        hideFlashback();
+        document.body.classList.add('mv-locked');
+        view.classList.add('open');
+        cursor && cursor.classList.remove('hover');
+        render();
+      }
+      function close() {
+        isOpen = false;
+        view.classList.remove('open');
+        document.body.classList.remove('mv-locked');
+      }
+      const go = d => { if (isOpen) { idx = (idx + d + slides.length) % slides.length; render(); } };
+      const firstIndexOfYear = y => slides.findIndex(s => s.year === Number(y));
+
+      track.querySelectorAll('.yr.has-memory').forEach(col => {
+        col.addEventListener('click', e => {
+          if (e.target.closest('a')) return;   // let the real links do their thing
+          e.preventDefault();
+          openAt(firstIndexOfYear(col.dataset.year));
+        });
+      });
+
+      view.querySelector('.mv-backdrop').addEventListener('click', close);
+      view.querySelector('.mv-close').addEventListener('click', close);
+      view.querySelector('.mv-nav.prev').addEventListener('click', () => go(-1));
+      view.querySelector('.mv-nav.next').addEventListener('click', () => go(1));
+      // expand the custom cursor over the controls so they feel clickable
+      view.querySelectorAll('.mv-nav, .mv-close').forEach(b => {
+        b.addEventListener('mouseenter', () => cursor && cursor.classList.add('hover'));
+        b.addEventListener('mouseleave', () => cursor && cursor.classList.remove('hover'));
+      });
+      window.addEventListener('keydown', e => {
+        if (!isOpen) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') go(-1);
+        else if (e.key === 'ArrowRight') go(1);
+      });
+    })();
 
     // a user gesture cancels the intro animation and any momentum
     let introRAF = 0, wheelRAF = 0, inertiaRAF = 0, interrupted = false;
@@ -669,6 +1086,7 @@
       if (!dragging) {
         if (Math.abs(d) <= 4) return;       // below threshold — let clicks through
         dragging = true; moved = true;
+        hideFlashback();                    // don't trail photos while panning
         stopAll(); interrupted = false;     // a real drag cancels intro/momentum
         try { viewport.setPointerCapture(pid); } catch (_) {}
         viewport.classList.add('dragging');
@@ -815,6 +1233,69 @@
     window.addEventListener('resize', resize);
     resize();
     draw();
+  })();
+</script>
+
+<!--
+  Home-page soundtrack: "Darkest Night" (soundcloud.com/23violins/darkest-night).
+  Browsers block autoplay-with-sound on load, so it starts on the first interaction
+  (click / tap / scroll / key). The floating button also plays/pauses manually.
+-->
+<iframe id="scPlayer" title="SoundCloud player" allow="autoplay"
+        style="position:absolute;left:-9999px;top:-9999px;width:0;height:0;border:0;"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/23violins/darkest-night&color=%237c93ff&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false"></iframe>
+<button id="soundToggle" class="sound-toggle" aria-label="Toggle soundtrack" aria-pressed="false" title="Play soundtrack">
+    <i class="fas fa-volume-mute"></i>
+</button>
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script>
+  (function () {
+    var toggle = document.getElementById('soundToggle');
+    var icon = toggle.querySelector('i');
+    var widget = null, ready = false, playing = false, wantPlay = false;
+
+    function setUI(p) {
+      playing = p;
+      toggle.classList.toggle('playing', p);
+      toggle.setAttribute('aria-pressed', String(p));
+      toggle.title = p ? 'Pause soundtrack' : 'Play soundtrack';
+      icon.className = p ? 'fas fa-volume-high' : 'fas fa-volume-mute';
+    }
+
+    function whenApiReady(cb) {
+      if (window.SC && SC.Widget) return cb();
+      setTimeout(function () { whenApiReady(cb); }, 100);
+    }
+
+    whenApiReady(function () {
+      widget = SC.Widget(document.getElementById('scPlayer'));
+      widget.bind(SC.Widget.Events.READY, function () {
+        ready = true;
+        widget.setVolume(55);
+        widget.bind(SC.Widget.Events.PLAY, function () { setUI(true); });
+        widget.bind(SC.Widget.Events.PAUSE, function () { setUI(false); });
+        widget.bind(SC.Widget.Events.FINISH, function () { widget.seekTo(0); widget.play(); });
+        if (wantPlay) widget.play();
+      });
+    });
+
+    // Start on the visitor's first interaction anywhere on the page.
+    function autoStart() {
+      wantPlay = true;
+      if (ready && widget) widget.play();
+      ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (ev) {
+        window.removeEventListener(ev, autoStart);
+      });
+    }
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (ev) {
+      window.addEventListener(ev, autoStart, { passive: true });
+    });
+
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (!ready || !widget) { wantPlay = true; return; }
+      if (playing) widget.pause(); else widget.play();
+    });
   })();
 </script>
 </body>
