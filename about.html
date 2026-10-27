@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #07080a;
@@ -20,6 +20,7 @@
             --accent-soft: rgba(255, 159, 90, 0.35);
             --serif: 'Space Grotesk', sans-serif;
             --sans: 'Inter', -apple-system, sans-serif;
+            --hand: 'Caveat', cursive;
         }
 
         * { box-sizing: border-box; }
@@ -201,8 +202,161 @@
         nav a.active { color: var(--text); }
         nav a.active::after { transform: scaleX(1); background: var(--faint); }
 
+        /* a print pinned above the bio, same paper as the timeline memories */
+        .portrait {
+            display: block;
+            width: 210px;
+            margin: 44px auto 0;
+            padding: 9px 9px 12px;
+            background: linear-gradient(160deg, #f4f1e9, #ddd7c9);
+            border-radius: 3px;
+            box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55),
+                        0 0 0 1px rgba(255, 255, 255, 0.05);
+            transform: rotate(-2.4deg);
+            transition: transform .6s cubic-bezier(.2, .8, .2, 1);
+            position: relative;
+        }
+        .portrait:hover { transform: rotate(0deg) scale(1.03); }
+        .portrait img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            object-position: 62% 40%;
+            border-radius: 1px;
+            background: #1a1a1a;
+        }
+        /* faint warm light-leak over the print, like an old photo */
+        .portrait::after {
+            content: '';
+            position: absolute;
+            inset: 9px 9px 42px;
+            border-radius: 1px;
+            background: radial-gradient(circle at 75% 15%, rgba(255, 220, 150, 0.28), transparent 55%);
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+        .portrait figcaption {
+            margin-top: 8px;
+            font-family: var(--hand);
+            font-size: 1.05rem;
+            color: #36312a;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* a small "step inside" hint under the print, like the timeline memories */
+        .portrait-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            font-family: var(--serif);
+            font-size: 0.56rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--faint);
+            transition: color .35s ease, text-shadow .35s ease;
+        }
+        .portrait-hint i { font-size: 0.62rem; }
+        .portrait-wrap { display: flex; flex-direction: column; align-items: center; }
+        .portrait-wrap:hover .portrait-hint { color: var(--accent); text-shadow: 0 0 12px var(--accent-soft); }
+
+        /* ---------- step inside: full-screen view of the print ---------- */
+        body.lb-locked { overflow: hidden; }
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .55s ease, visibility .55s ease;
+        }
+        .lightbox.open { opacity: 1; visibility: visible; }
+        .lb-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(4, 4, 6, 0.82);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+        }
+        .lb-stage {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 92vw;
+            padding: 0 24px;
+        }
+        .lb-frame {
+            margin: 0;
+            padding: 14px 14px 18px;
+            background: linear-gradient(160deg, #f4f1e9, #ddd7c9);
+            border-radius: 4px;
+            box-shadow: 0 44px 90px rgba(0, 0, 0, 0.6),
+                        0 0 0 1px rgba(255, 255, 255, 0.05);
+            transform: rotate(-1deg);
+        }
+        .lightbox.open .lb-frame { animation: lbIn .6s cubic-bezier(.2, .8, .2, 1); }
+        @keyframes lbIn {
+            from { opacity: 0; transform: scale(.92) translateY(10px) rotate(-1deg); filter: blur(14px) saturate(0); }
+            to   { opacity: 1; transform: rotate(-1deg); filter: blur(0) saturate(1); }
+        }
+        .lb-frame img {
+            display: block;
+            max-width: min(84vw, 640px);
+            max-height: 66vh;
+            width: auto;
+            height: auto;
+            border-radius: 2px;
+            background: #1a1a1a;
+        }
+        .lb-note {
+            margin: 26px 0 0;
+            font-family: var(--hand);
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            color: #e4ddd0;
+            text-align: center;
+            transform: rotate(-1.5deg);
+            opacity: 0;
+            animation: none;
+        }
+        .lightbox.open .lb-note { animation: lbNote .8s ease .35s forwards; }
+        @keyframes lbNote { to { opacity: 1; } }
+        .lb-close {
+            position: absolute;
+            top: 22px; right: 26px;
+            z-index: 3;
+            width: 44px; height: 44px;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            background: rgba(12, 12, 14, 0.5);
+            color: var(--muted);
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: none;
+            transition: color .3s ease, border-color .3s ease;
+        }
+        .lb-close:hover { color: var(--text); border-color: var(--accent-soft); }
+        .lb-hint {
+            position: absolute;
+            bottom: 24px; left: 0; right: 0;
+            text-align: center;
+            font-family: var(--serif);
+            font-size: 0.56rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--faint);
+        }
+
         .content {
-            margin-top: 48px;
+            width: 100%;
+            min-width: 0;
+            margin-top: 36px;
             display: flex;
             flex-direction: column;
             gap: 22px;
@@ -271,6 +425,11 @@
         }
         .email a:hover { color: var(--accent); border-color: var(--accent); }
 
+        /* long links must be allowed to break on phones */
+        @media (max-width: 600px) {
+            .content a { white-space: normal; }
+        }
+
         @media (hover: none), (pointer: coarse) {
             body { cursor: auto; }
             #cursor, #glow { display: none; }
@@ -295,6 +454,16 @@
 <div id="glow"></div>
 <div id="cursor"></div>
 
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Photo" aria-hidden="true">
+    <div class="lb-backdrop"></div>
+    <button class="lb-close" aria-label="Close">×</button>
+    <div class="lb-stage">
+        <figure class="lb-frame"><img src="photos/ride.jpg" alt="Alvaro climbing a mountain pass on a road bike" draggable="false"></figure>
+        <p class="lb-note">somewhere on a pass, negotiating with the gradient.</p>
+    </div>
+    <div class="lb-hint">Esc to close</div>
+</div>
+
 <div class="wrap">
     <header>
         <h1 id="name" aria-label="Alvaro Molina">Alvaro Molina</h1>
@@ -305,14 +474,22 @@
         </nav>
     </header>
 
+    <div class="portrait-wrap reveal" style="animation-delay:1.15s">
+        <figure class="portrait" id="portrait" role="button" tabindex="0" aria-label="Open photo">
+            <img src="photos/ride.jpg" alt="Alvaro climbing a mountain pass on a road bike" draggable="false">
+            <figcaption>uphill, by choice.</figcaption>
+        </figure>
+        <span class="portrait-hint"><i class="fas fa-camera-retro"></i>Step inside</span>
+    </div>
+
     <div class="content">
-        <p class="reveal" style="animation-delay:1.2s">
+        <p class="reveal" style="animation-delay:1.3s">
             I'm an engineer based in Zürich, Switzerland. Today I'm a Member of Technical Staff at <a href="https://teton.ai" target="_blank">Teton</a>, helping nurses and caregivers cope with a global staffing crisis, and I build <a href="https://github.com/teton-ai/smith" target="_blank">smith</a>, an open-source Fleet Management System. Independently, I'm building <a href="https://dosei.io" target="_blank">Dosei</a> — a local-first successor to Kubernetes, made for developers.
         </p>
-        <p class="reveal" style="animation-delay:1.5s">
+        <p class="reveal" style="animation-delay:1.45s">
             Before this, I founded a handful of companies. I bootstrapped Vexir Network at 16 and grew it to 2.5 million registered users before selling it, then went on to build venture-backed ones like EnhanceDocs, backed by investors like <a href="https://dcgross.com/" target="_blank">Daniel Gross</a>. Along the way I served as Director of Engineering at <a href="https://nordcloud.com/" target="_blank">Nordcloud, an IBM Company</a>.
         </p>
-        <p class="reveal" style="animation-delay:1.65s">
+        <p class="reveal" style="animation-delay:1.6s">
             Outside of work, I'm drawn to endurance sports and the outdoors. I hold a <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/power-boat-certificate" target="_blank">power boat license</a> and a
             <a href="https://www.dma.dk/recreational-sailing/training-programmes-and-personal-certificates/certificate-of-competency-for-recreational-sailors" target="_blank">Certificate of Competency for recreational sailors</a> — and one day, I intend to earn my private pilot's license.
         </p>
@@ -352,6 +529,35 @@
       el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
       el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
     });
+  })();
+
+  // ---- step inside: the print opens full screen ----
+  (function () {
+    const fig = document.getElementById('portrait');
+    const box = document.getElementById('lightbox');
+    const cursor = document.getElementById('cursor');
+    if (!fig || !box) return;
+    const hover = on => cursor && cursor.classList.toggle('hover', on);
+    function open() {
+      box.classList.add('open');
+      box.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('lb-locked');
+      hover(false);
+    }
+    function close() {
+      box.classList.remove('open');
+      box.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('lb-locked');
+    }
+    fig.addEventListener('click', open);
+    fig.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+    fig.addEventListener('mouseenter', () => hover(true));
+    fig.addEventListener('mouseleave', () => hover(false));
+    box.querySelector('.lb-backdrop').addEventListener('click', close);
+    box.querySelector('.lb-close').addEventListener('click', close);
+    box.querySelector('.lb-close').addEventListener('mouseenter', () => hover(true));
+    box.querySelector('.lb-close').addEventListener('mouseleave', () => hover(false));
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   })();
 </script>
 <script src="ridges.js"></script>
