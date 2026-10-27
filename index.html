@@ -4,20 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alvaro Molina</title>
-    <meta name="description" content="Alvaro Molina — Engineer based in Zürich, Switzerland. A timeline.">
+    <meta name="description" content="Alvaro Molina — Engineer based in Zürich, Switzerland. A life drawn as an elevation profile.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #060606;
+            --bg: #07080a;
             --text: #ededed;
             --muted: #8a8a8a;
             --faint: #4a4a4a;
             --line: rgba(255, 255, 255, 0.08);
-            --accent: #7c93ff;
-            --accent-soft: rgba(124, 147, 255, 0.35);
+            /* alpenglow: the orange that hits a ridge at 6am */
+            --accent: #ff9f5a;
+            --accent-soft: rgba(255, 159, 90, 0.35);
+            --accent-glow: rgba(255, 159, 90, 0.14);
             --serif: 'Space Grotesk', sans-serif;
             --sans: 'Inter', -apple-system, sans-serif;
             --hand: 'Caveat', cursive;
@@ -40,7 +42,9 @@
         }
 
         /* ---------- background layers ---------- */
-        #constellation {
+        /* layered ridgelines, drawn on a canvas; they parallax with the cursor
+           and drift as you ride along the timeline */
+        #ridges {
             position: fixed;
             inset: 0;
             z-index: 0;
@@ -60,16 +64,17 @@
             pointer-events: none;
             will-change: transform;
         }
+        /* warm light low on the horizon, cold mist sitting in the valley */
         .aurora.one {
-            top: -15%;
-            left: -10%;
-            background: radial-gradient(circle, rgba(124,147,255,0.5), transparent 70%);
+            top: -12%;
+            left: -8%;
+            background: radial-gradient(circle, rgba(255,150,80,0.34), transparent 70%);
             animation: drift1 22s ease-in-out infinite alternate;
         }
         .aurora.two {
-            bottom: -20%;
+            bottom: -22%;
             right: -10%;
-            background: radial-gradient(circle, rgba(80,80,140,0.45), transparent 70%);
+            background: radial-gradient(circle, rgba(70,90,120,0.42), transparent 70%);
             animation: drift2 28s ease-in-out infinite alternate;
         }
 
@@ -120,7 +125,7 @@
             top: 0; left: 0;
             width: 500px; height: 500px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(124,147,255,0.10), transparent 65%);
+            background: radial-gradient(circle, var(--accent-glow), transparent 65%);
             transform: translate(-50%, -50%);
             pointer-events: none;
             z-index: 2;
@@ -144,7 +149,7 @@
             letter-spacing: -0.03em;
             margin: 0;
             line-height: 1;
-            background: linear-gradient(110deg, #ffffff 20%, #9aa6ff 50%, #ffffff 80%);
+            background: linear-gradient(110deg, #ffffff 20%, #ffc59a 50%, #ffffff 80%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
@@ -161,12 +166,25 @@
 
         .role {
             font-family: var(--serif);
-            font-size: 0.8rem;
-            letter-spacing: 0.35em;
+            font-size: 0.72rem;
+            letter-spacing: 0.32em;
             text-transform: uppercase;
             color: var(--muted);
-            margin-top: 18px;
+            margin: 20px 0 0;
         }
+        .role .sep { color: var(--faint); margin: 0 2px; }
+        @media (max-width: 600px) {
+            .role { font-size: 0.62rem; letter-spacing: 0.2em; }
+            .tagline { font-size: 1.1rem; }
+        }
+        .tagline {
+            font-family: var(--hand);
+            font-size: 1.25rem;
+            color: var(--muted);
+            margin: 10px 0 0;
+            transform: rotate(-1.2deg);
+        }
+        .tagline em { font-style: normal; color: var(--accent); }
 
         nav {
             margin: 26px 0 0;
@@ -224,17 +242,74 @@
             position: relative;
             display: flex;
             width: max-content;
-            min-height: 440px;
+            min-height: 480px;
             padding: 0 110px;
         }
-        /* dotted axis line */
-        .timeline-track::before {
-            content: '';
+        /* the vertical rail only exists on mobile */
+        .timeline-track::before { content: ''; display: none; }
+
+        /* the axis is an elevation profile: a slow lifelong climb, with a
+           summit on every year something happened. Drawn in JS. */
+        .tl-profile {
             position: absolute;
-            left: 0; right: 0;
-            top: 92px;
-            border-top: 1px dashed var(--line);
+            left: 0; top: 0;
+            pointer-events: none;
+            overflow: visible;
         }
+        .tl-profile stop.a { stop-color: var(--accent); }
+        .tl-profile .fill { fill: url(#profFill); }
+        .tl-profile .line {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 1.2;
+            stroke-linejoin: round;
+            opacity: .85;
+        }
+
+        /* the cyclist: pinned to the screen, rides the profile as you scroll */
+        .rider {
+            position: absolute;
+            left: 0; top: 0;
+            z-index: 12;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .4s ease;
+        }
+        .rider .rider-ico {
+            position: absolute;
+            left: 0; top: 0;
+            font-size: 1.55rem;
+            color: var(--text);
+            transform-origin: 50% 100%;
+            transform: translate(-50%, -100%);
+            filter: drop-shadow(0 0 10px var(--accent-soft));
+            will-change: transform;
+        }
+        .rider .rider-ico::before { display: inline-block; animation: cadence .55s ease-in-out infinite alternate; }
+        @keyframes cadence {
+            from { transform: translateY(0); }
+            to   { transform: translateY(-1.5px); }
+        }
+        /* a bike-computer readout: the gradient under the wheels right now */
+        .rider .rider-grade {
+            position: absolute;
+            left: 0; top: -58px;
+            transform: translateX(-50%);
+            font-family: var(--serif);
+            font-size: 0.6rem;
+            letter-spacing: 0.16em;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            padding: 3px 8px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: rgba(7, 8, 10, 0.6);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            transition: color .3s ease, border-color .3s ease;
+        }
+        .rider .rider-grade.up { color: var(--accent); border-color: var(--accent-soft); }
 
         /* AGE / YEAR row labels — fixed at left, above the edge fade */
         .tl-labels {
@@ -255,6 +330,7 @@
         }
         .tl-labels .l-age  { top: 8px; }
         .tl-labels .l-year { top: 36px; }
+        .tl-labels .l-elev { top: 98px; }
 
         .yr {
             position: relative;
@@ -284,20 +360,36 @@
         .yr.event .year { color: var(--text); }
         .yr.event .age  { color: #c4c4c4; }
 
-        /* tick hanging from the dotted line */
+        /* a marker sitting on the ridge at this year's elevation (--py from JS) */
         .yr .tick {
             position: absolute;
-            top: 92px; left: 1px;
-            width: 1px; height: 11px;
+            top: calc(var(--py, 134) * 1px); left: 1px;
+            width: 5px; height: 5px;
+            border-radius: 50%;
             background: var(--faint);
-            transition: background .3s ease, height .3s ease;
+            transform: translate(-50%, -50%);
+            transition: background .3s ease;
         }
-        .yr.event .tick { background: var(--accent); height: 16px; }
+        /* summits: a cairn on top, and a thin rope down to the story */
+        .yr.event .tick {
+            width: 8px; height: 8px;
+            background: var(--accent);
+            box-shadow: 0 0 0 3px var(--bg), 0 0 14px var(--accent-soft);
+        }
+        .yr.event .tick::after {
+            content: '';
+            position: absolute;
+            left: 50%; top: 100%;
+            width: 0;
+            height: calc((160px - var(--py, 134) * 1px) - 12px);
+            border-left: 1px dashed var(--line);
+            transform: translateX(-50%);
+        }
 
         /* event copy below the axis */
         .yr .events {
             position: absolute;
-            top: 124px; left: 0;
+            top: 160px; left: 0;
             width: 196px;
         }
         .yr .events p {
@@ -322,7 +414,7 @@
             padding-bottom: 1px;
         }
         .yr .events a:hover {
-            color: #aab6ff;
+            color: #ffbf8f;
             background-size: 100% 2px;
             text-shadow: 0 0 14px var(--accent-soft);
         }
@@ -453,7 +545,7 @@
             letter-spacing: -0.03em;
             line-height: 1;
             margin-bottom: 22px;
-            background: linear-gradient(110deg, #ffffff 20%, #9aa6ff 50%, #ffffff 80%);
+            background: linear-gradient(110deg, #ffffff 20%, #ffc59a 50%, #ffffff 80%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
@@ -651,8 +743,12 @@
                 min-height: 0;
                 padding: 18px 0;
             }
+            /* no profile or rider on mobile: the column is the rail */
+            .tl-profile, .rider { display: none; }
+            .yr.event .tick::after { display: none; }
             /* the axis becomes a vertical dashed rail down the left */
             .timeline-track::before {
+                display: block;
                 top: 8px; bottom: 8px;
                 left: 18px; right: auto;
                 border-top: none;
@@ -694,11 +790,13 @@
                 border-radius: 50%;
                 background: var(--faint);
                 box-shadow: 0 0 0 4px var(--bg);
+                transform: none;
             }
             .yr.event .tick {
                 top: 7px; left: 14px;
                 width: 9px; height: 9px;
                 background: var(--accent);
+                box-shadow: 0 0 0 4px var(--bg);
             }
             .yr .events {
                 position: static;
@@ -721,14 +819,14 @@
                 transition-duration: .01ms !important;
             }
             h1, .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
-            #constellation, .grain { display: none; }
+            .grain { display: none; }
         }
     </style>
 </head>
 <body>
 <div class="aurora one"></div>
 <div class="aurora two"></div>
-<canvas id="constellation"></canvas>
+<canvas id="ridges"></canvas>
 <div class="grain"></div>
 <div id="glow"></div>
 <div id="cursor"></div>
@@ -736,6 +834,8 @@
 <div class="wrap">
     <header>
         <h1 id="name" aria-label="Alvaro Molina">Alvaro Molina</h1>
+        <p class="role reveal" style="animation-delay:.8s">Engineer <span class="sep">·</span> Zürich <span class="sep">·</span> Uphill, by choice</p>
+        <p class="tagline reveal" style="animation-delay:.95s">checks his <em>VO₂max</em> before his email.</p>
         <nav class="reveal" style="animation-delay:1.05s">
             <a href="index.html" class="active">Home</a>
             <a href="writing.html">Writing</a>
@@ -745,13 +845,17 @@
 
     <main>
         <!--
-          Horizontal life timeline. Years/ages and the ruler are generated in JS
-          from the EVENTS map below; born year = 1999. Edit EVENTS to change copy.
+          Horizontal life timeline, drawn as a ride: the axis is an elevation
+          profile where every year with an event is a summit, and a cyclist
+          pinned to the screen rides it as you scroll. Years/ages, the profile
+          and the rider are generated in JS from the EVENTS map below;
+          born year = 1999. Edit EVENTS to change copy.
         -->
         <div class="timeline-shell reveal" style="animation-delay:1.2s">
             <div class="tl-labels">
                 <span class="l-age">Age</span>
                 <span class="l-year">Year</span>
+                <span class="l-elev">Elev</span>
             </div>
             <div class="timeline-viewport" id="tlViewport">
                 <div class="timeline-track" id="tlTrack"></div>
@@ -848,6 +952,100 @@
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const maxScroll = () => track.scrollWidth - viewport.clientWidth;
     const clamp = v => Math.max(0, Math.min(maxScroll(), v));
+    // mobile lays the track out as a vertical column scrolled by the page itself
+    const isVertical = () => /^column/.test(getComputedStyle(track).flexDirection);
+
+    // ---- elevation profile: the axis is a ride, the event years are summits ----
+    const PROF = { top: 66, base: 134 };          // y band inside the track
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'tl-profile');
+    svg.setAttribute('aria-hidden', 'true');
+    track.insertBefore(svg, track.firstChild);
+    const cols = Array.from(track.querySelectorAll('.yr'));
+
+    let profPts = null, profStep = 3, profW = 0;
+    function buildProfile() {
+      if (isVertical()) { profPts = null; return; }
+      const W = track.scrollWidth, H = PROF.base + 10;
+      // how much each year lifts the ridge: more happened -> higher summit
+      const peaks = cols.map(c => ({
+        x: c.offsetLeft + 1,
+        h: c.classList.contains('event')
+          ? 20 + 11 * Math.min(3, c.querySelectorAll('.events p').length + (c.classList.contains('has-memory') ? 1 : 0))
+          : 0
+      })).filter(p => p.h);
+      const elev = x => {
+        // a slow lifelong ascent with some rolling terrain underneath
+        let y = PROF.base - 22 * (x / W) - 6 * Math.sin(x / 113) - 3 * Math.sin(x / 47 + 2) - 1.5 * Math.sin(x / 19);
+        for (const p of peaks) { const d = (x - p.x) / 62; y -= p.h * Math.exp(-d * d); }
+        return Math.max(PROF.top, Math.min(PROF.base, y));
+      };
+      const n = Math.ceil(W / profStep) + 1;
+      profPts = new Float32Array(n);
+      for (let i = 0; i < n; i++) profPts[i] = elev(i * profStep);
+      profW = W;
+
+      let d = '';
+      for (let i = 0; i < n; i++) d += (i ? 'L' : 'M') + (i * profStep) + ' ' + profPts[i].toFixed(1);
+      svg.setAttribute('width', W); svg.setAttribute('height', H);
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+      svg.innerHTML =
+        '<defs><linearGradient id="profFill" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop class="a" offset="0" stop-opacity=".26"/>' +
+          '<stop class="a" offset="1" stop-opacity="0"/>' +
+        '</linearGradient></defs>' +
+        '<path class="fill" d="' + d + 'L' + W + ' ' + H + 'L0 ' + H + 'Z"/>' +
+        '<path class="line" d="' + d + '"/>';
+      // every year's marker sits on the ridge at that year's elevation
+      cols.forEach(c => c.style.setProperty('--py', elev(c.offsetLeft + 1).toFixed(1)));
+    }
+    const elevAt = x => {
+      if (!profPts) return PROF.base;
+      const f = Math.max(0, Math.min(profPts.length - 1.001, x / profStep));
+      const i = Math.floor(f), t = f - i;
+      return profPts[i] + (profPts[i + 1] - profPts[i]) * t;
+    };
+
+    // ---- the rider: pinned to the screen, rides the profile as you scroll ----
+    const rider = document.createElement('div');
+    rider.className = 'rider';
+    rider.innerHTML = '<span class="rider-grade"></span><i class="fas fa-person-biking rider-ico"></i>';
+    viewport.parentElement.appendChild(rider);
+    const riderIco = rider.querySelector('.rider-ico');
+    const riderGrade = rider.querySelector('.rider-grade');
+    let riderLastX = -1, riderDirty = true;
+    function placeRider() {
+      if (!profPts) { rider.style.opacity = '0'; return; }
+      const rx = viewport.clientWidth * 0.36;
+      const tx = viewport.scrollLeft + rx;
+      const y = elevAt(tx);
+      // slope from the stretch under the wheels; y grows downward, so up is negative
+      const slope = (elevAt(tx + 12) - elevAt(tx - 12)) / 24;
+      const deg = Math.atan(slope) * 180 / Math.PI;
+      rider.style.opacity = '1';
+      rider.style.transform = 'translate(' + rx.toFixed(1) + 'px,' + (y - 1).toFixed(1) + 'px)';
+      riderIco.style.transform = 'translate(-50%, -100%) rotate(' + deg.toFixed(1) + 'deg)';
+      // the bike-computer readout: a made-up but honest-feeling gradient
+      const g = Math.round(Math.abs(slope) * 14);
+      const up = slope < -0.03, down = slope > 0.03;
+      riderGrade.textContent = (up ? '\u2197 ' : down ? '\u2198 ' : '') + g + '%';
+      riderGrade.classList.toggle('up', up);
+      riderLastX = viewport.scrollLeft;
+    }
+    (function riderLoop() {
+      const x = viewport.scrollLeft;
+      if (riderDirty || x !== riderLastX) { riderLastX = x; riderDirty = false; placeRider(); }
+      requestAnimationFrame(riderLoop);
+    })();
+    buildProfile(); placeRider();
+    let rebuildT = 0;
+    window.addEventListener('resize', () => {
+      clearTimeout(rebuildT);
+      rebuildT = setTimeout(() => { buildProfile(); riderDirty = true; }, 120);
+    });
+    // fonts can shift nothing here (fixed-width columns), but the layout may
+    // settle after load on some browsers; rebuild once to be safe
+    window.addEventListener('load', () => { buildProfile(); riderDirty = true; });
 
     // ---- flashback memories: bloom photos near the cursor on hover ----
     // Desktop / fine-pointer only — needs real hover, and we respect reduced motion.
@@ -992,8 +1190,6 @@
       wheelRAF = inertiaRAF = 0;
     }
 
-    // mobile lays the track out as a vertical column scrolled by the page itself
-    const isVertical = () => /^column/.test(getComputedStyle(track).flexDirection);
     const ease = t => 1 - Math.pow(1 - t, 3); // ease-out cubic
 
     // ---- intro auto-scroll: from age 0 (birth) to the latest year ----
@@ -1008,6 +1204,7 @@
         if (interrupted) return;
         const t = Math.min((now - start) / duration, 1);
         viewport.scrollLeft = target * ease(t);
+        placeRider();
         if (t < 1) introRAF = requestAnimationFrame(step);
       }
       introRAF = requestAnimationFrame(() => { introRAF = requestAnimationFrame(step); });
@@ -1042,8 +1239,9 @@
     function wheelLoop() {
       const cur = viewport.scrollLeft;
       const diff = wheelTarget - cur;
-      if (Math.abs(diff) < 0.5) { viewport.scrollLeft = wheelTarget; wheelRAF = 0; return; }
+      if (Math.abs(diff) < 0.5) { viewport.scrollLeft = wheelTarget; placeRider(); wheelRAF = 0; return; }
       viewport.scrollLeft = cur + diff * 0.18;
+      placeRider();
       wheelRAF = requestAnimationFrame(wheelLoop);
     }
     viewport.addEventListener('wheel', e => {
@@ -1069,7 +1267,7 @@
                                : track.scrollWidth - viewport.clientWidth;
     const dragClamp = v => Math.max(0, Math.min(dragMax(), v));
     const scrollPos = () => vert ? viewport.scrollTop : viewport.scrollLeft;
-    const setScroll = v => { if (vert) viewport.scrollTop = v; else viewport.scrollLeft = v; };
+    const setScroll = v => { if (vert) viewport.scrollTop = v; else { viewport.scrollLeft = v; placeRider(); } };
 
     viewport.addEventListener('pointerdown', e => {
       if (e.pointerType !== 'mouse' || e.button !== 0) return;
@@ -1148,93 +1346,8 @@
       el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
     });
   })();
-
-  // ---- interactive constellation ----
-  (function () {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) return;
-    const canvas = document.getElementById('constellation');
-    const ctx = canvas.getContext('2d');
-    let w, h, dpr, particles = [];
-    const mouse = { x: -9999, y: -9999 };
-
-    function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas.width = innerWidth * dpr;
-      h = canvas.height = innerHeight * dpr;
-      canvas.style.width = innerWidth + 'px';
-      canvas.style.height = innerHeight + 'px';
-      const count = Math.min(90, Math.floor((innerWidth * innerHeight) / 16000));
-      particles = Array.from({ length: count }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.25 * dpr,
-        vy: (Math.random() - 0.5) * 0.25 * dpr,
-        r: (Math.random() * 1.4 + 0.6) * dpr
-      }));
-    }
-
-    window.addEventListener('mousemove', e => { mouse.x = e.clientX * dpr; mouse.y = e.clientY * dpr; });
-    window.addEventListener('mouseout', () => { mouse.x = -9999; mouse.y = -9999; });
-
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      const linkDist = 130 * dpr;
-      const mouseDist = 180 * dpr;
-
-      for (const p of particles) {
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > w) p.vx *= -1;
-        if (p.y < 0 || p.y > h) p.vy *= -1;
-
-        // gentle attraction toward cursor
-        const dxm = mouse.x - p.x, dym = mouse.y - p.y;
-        const dm = Math.hypot(dxm, dym);
-        if (dm < mouseDist) {
-          const f = (1 - dm / mouseDist) * 0.4;
-          p.x += (dxm / dm) * f;
-          p.y += (dym / dm) * f;
-        }
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(180,190,255,0.55)';
-        ctx.fill();
-      }
-
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const a = particles[i], b = particles[j];
-          const d = Math.hypot(a.x - b.x, a.y - b.y);
-          if (d < linkDist) {
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `rgba(124,147,255,${0.16 * (1 - d / linkDist)})`;
-            ctx.lineWidth = dpr * 0.6;
-            ctx.stroke();
-          }
-        }
-        // link to cursor
-        const a = particles[i];
-        const dc = Math.hypot(a.x - mouse.x, a.y - mouse.y);
-        if (dc < mouseDist) {
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(160,175,255,${0.25 * (1 - dc / mouseDist)})`;
-          ctx.lineWidth = dpr * 0.6;
-          ctx.stroke();
-        }
-      }
-      requestAnimationFrame(draw);
-    }
-
-    window.addEventListener('resize', resize);
-    resize();
-    draw();
-  })();
 </script>
+<script src="ridges.js"></script>
 
 <!--
   Home-page soundtrack: "Darkest Night" (soundcloud.com/23violins/darkest-night).
@@ -1243,7 +1356,7 @@
 -->
 <iframe id="scPlayer" title="SoundCloud player" allow="autoplay"
         style="position:absolute;left:-9999px;top:-9999px;width:0;height:0;border:0;"
-        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/23violins/darkest-night&color=%237c93ff&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false"></iframe>
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/23violins/darkest-night&color=%23ff9f5a&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false"></iframe>
 <button id="soundToggle" class="sound-toggle" aria-label="Toggle soundtrack" aria-pressed="false" title="Play soundtrack">
     <i class="fas fa-volume-mute"></i>
 </button>
