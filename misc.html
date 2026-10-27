@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alvaro Molina — Misc</title>
+    <meta name="description" content="Alvaro Molina — Misc: SSH public key, dotfiles, and other odds and ends.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #07080a;
+            --text: #ededed;
+            --muted: #8a8a8a;
+            --faint: #4a4a4a;
+            --line: rgba(255, 255, 255, 0.08);
+            --accent: #ff9f5a;
+            --accent-soft: rgba(255, 159, 90, 0.35);
+            --serif: 'Space Grotesk', sans-serif;
+            --sans: 'Inter', -apple-system, sans-serif;
+            --hand: 'Caveat', cursive;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body { margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        /* ---------- background layers ---------- */
+        /* layered ridgelines, drawn on a canvas (ridges.js); they parallax with the cursor */
+        #ridges { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .aurora {
+            position: fixed;
+            z-index: 0;
+            width: 60vw;
+            height: 60vw;
+            max-width: 720px;
+            max-height: 720px;
+            border-radius: 50%;
+            filter: blur(110px);
+            opacity: 0.5;
+            pointer-events: none;
+            will-change: transform;
+        }
+        .aurora.one {
+            top: -15%;
+            left: -10%;
+            background: radial-gradient(circle, rgba(255,150,80,0.34), transparent 70%);
+            animation: drift1 22s ease-in-out infinite alternate;
+        }
+        .aurora.two {
+            bottom: -20%;
+            right: -10%;
+            background: radial-gradient(circle, rgba(70,90,120,0.42), transparent 70%);
+            animation: drift2 28s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift1 {
+            from { transform: translate(0, 0) scale(1); }
+            to   { transform: translate(12vw, 10vh) scale(1.2); }
+        }
+        @keyframes drift2 {
+            from { transform: translate(0, 0) scale(1.1); }
+            to   { transform: translate(-10vw, -8vh) scale(0.9); }
+        }
+
+        .grain {
+            position: fixed;
+            inset: -50%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.045;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            animation: grainShift 0.6s steps(2) infinite;
+        }
+        @keyframes grainShift {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(-2%, 1%); }
+            100% { transform: translate(1%, -2%); }
+        }
+
+        /* cursor spotlight */
+        #cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 26px; height: 26px;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: width .25s ease, height .25s ease, background .25s ease, border-color .25s ease;
+            mix-blend-mode: difference;
+        }
+        #cursor.hover {
+            width: 56px; height: 56px;
+            background: rgba(255,255,255,0.9);
+            border-color: transparent;
+        }
+        #glow {
+            position: fixed;
+            top: 0; left: 0;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 159, 90,0.10), transparent 65%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ---------- content ---------- */
+        .wrap {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 60px 24px;
+            max-width: 660px;
+            margin: 0 auto;
+        }
+
+        header { margin-bottom: 12px; }
+
+        h1 {
+            font-family: var(--serif);
+            font-weight: 700;
+            font-size: clamp(2.6rem, 8vw, 4.2rem);
+            letter-spacing: -0.03em;
+            margin: 0;
+            line-height: 1;
+            background: linear-gradient(110deg, #ffffff 20%, #ffc59a 50%, #ffffff 80%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 6s linear infinite, nameIn 1s cubic-bezier(.2,.7,.2,1) both;
+        }
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+        @keyframes nameIn {
+            from { opacity: 0; transform: translateY(26px) scale(.97); filter: blur(6px); }
+            to   { opacity: 1; transform: none; filter: blur(0); }
+        }
+
+        .role {
+            font-family: var(--serif);
+            font-size: 0.8rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 18px;
+        }
+
+        nav {
+            margin: 26px 0 0;
+            display: flex;
+            gap: 28px;
+            justify-content: center;
+        }
+        nav a {
+            position: relative;
+            font-family: var(--serif);
+            font-size: 0.78rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 4px 0;
+            transition: color .3s ease;
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: 0;
+            width: 100%; height: 1px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .35s cubic-bezier(.2,.7,.2,1);
+        }
+        nav a:hover { color: var(--text); }
+        nav a:hover::after { transform: scaleX(1); }
+        nav a.active { color: var(--text); }
+        nav a.active::after { transform: scaleX(1); background: var(--faint); }
+
+        /* ---------- misc ---------- */
+        .intro {
+            margin: 28px 0 0;
+            font-size: 1.02rem;
+            color: #cfcfcf;
+            font-weight: 300;
+        }
+        .res {
+            width: 100%;
+            min-width: 0;
+            margin-top: 44px;
+            text-align: left;
+        }
+        .res h2 {
+            margin: 0 0 14px;
+            font-family: var(--serif);
+            font-weight: 500;
+            font-size: 0.62rem;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .res + .res { margin-top: 40px; }
+        .res ul { list-style: none; margin: 0; padding: 0; }
+        .res li {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            padding: 13px 0;
+            border-top: 1px solid var(--line);
+        }
+        .res li:last-child { border-bottom: 1px solid var(--line); }
+        .res li .name { flex: 0 0 148px; }
+        .res li .what { flex: 1 1 auto; color: var(--muted); font-size: 0.92rem; min-width: 0; }
+        .res li .meta {
+            flex: 0 0 auto;
+            font-family: var(--serif);
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--faint);
+        }
+        .res .name a { white-space: nowrap; }
+
+        /* the public key, printed in full so it can be read, copied or curled */
+        .keybox {
+            position: relative;
+            margin: 0;
+            padding: 16px 112px 16px 18px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: rgba(12, 12, 14, 0.55);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+            font-size: 0.78rem;
+            line-height: 1.55;
+            color: #cfcfcf;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+        .keybox .copy {
+            position: absolute;
+            top: 12px; right: 12px;
+            font-family: var(--serif);
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 6px 12px;
+            cursor: none;
+            transition: color .3s ease, border-color .3s ease;
+        }
+        .keybox .copy:hover, .keybox .copy.done { color: var(--accent); border-color: var(--accent-soft); }
+        .keymeta {
+            margin: 12px 0 0;
+            font-family: var(--serif);
+            font-size: 0.62rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--faint);
+            overflow-wrap: anywhere;
+        }
+        .keymeta code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; letter-spacing: 0; text-transform: none; color: var(--muted); }
+        .cmd {
+            margin: 18px 0 0;
+            padding: 12px 16px;
+            border-left: 1px solid var(--accent-soft);
+            font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+            font-size: 0.78rem;
+            color: var(--muted);
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .cmd b { font-weight: 400; color: var(--text); }
+
+        @media (max-width: 600px) {
+            .res li { flex-wrap: wrap; gap: 4px 12px; }
+            .res li .name { flex-basis: auto; }
+            .res li .what { flex-basis: 100%; order: 3; }
+            .keybox { padding: 14px 14px 52px; font-size: 0.72rem; }
+            .cmd { white-space: pre-wrap; overflow-wrap: anywhere; }
+            .keybox .copy { top: auto; bottom: 12px; right: 12px; }
+        }
+
+        .content {
+            width: 100%;
+            min-width: 0;
+            margin-top: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+        .content p {
+            margin: 0;
+            font-size: 1.02rem;
+            color: #cfcfcf;
+            font-weight: 300;
+        }
+
+        /* inline links */
+        .res a, .keymeta a, .email a {
+            color: var(--text);
+            text-decoration: none;
+            position: relative;
+            white-space: nowrap;
+        }
+        .res a, .keymeta a {
+            color: var(--accent);
+            font-weight: 400;
+            background: linear-gradient(var(--accent), var(--accent)) no-repeat;
+            background-position: 0 100%;
+            background-size: 100% 1px;
+            transition: background-size .3s cubic-bezier(.2,.7,.2,1), color .3s ease, text-shadow .3s ease;
+            padding-bottom: 1px;
+        }
+        .res a:hover, .keymeta a:hover {
+            color: #ffbf8f;
+            background-size: 100% 2px;
+            text-shadow: 0 0 14px var(--accent-soft);
+        }
+
+        /* reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: revealUp .9s cubic-bezier(.2,.7,.2,1) forwards;
+        }
+        @keyframes revealUp { to { opacity: 1; transform: none; } }
+
+        footer {
+            margin-top: 56px;
+            padding-top: 28px;
+            border-top: 1px solid var(--line);
+            width: 100%;
+        }
+        .social-links { margin-bottom: 16px; display: flex; gap: 22px; justify-content: center; }
+        .social-links a {
+            color: var(--muted);
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: color .3s ease, transform .3s ease;
+            display: inline-block;
+        }
+        .social-links a:hover {
+            color: var(--text);
+            transform: translateY(-4px);
+        }
+        .email a {
+            font-size: 0.92rem;
+            color: var(--muted);
+            border-bottom: 1px dotted var(--faint);
+            padding-bottom: 1px;
+            transition: color .3s ease, border-color .3s ease;
+        }
+        .email a:hover { color: var(--accent); border-color: var(--accent); }
+
+        /* long links must be allowed to break on phones */
+        @media (max-width: 600px) {
+            .res a, .keymeta a { white-space: normal; }
+        }
+
+        /* small link to the misc page, tucked under the email */
+        .footer-misc { margin-top: 16px; }
+        .footer-misc a {
+            font-family: var(--serif);
+            font-size: 0.6rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--faint);
+            text-decoration: none;
+            border: none;
+            transition: color .3s ease;
+        }
+        .footer-misc a:hover, .footer-misc a.active { color: var(--accent); }
+
+        @media (hover: none), (pointer: coarse) {
+            body { cursor: auto; }
+            #cursor, #glow { display: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+            h1, .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+            .grain { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="aurora one"></div>
+<div class="aurora two"></div>
+<canvas id="ridges"></canvas>
+<div class="grain"></div>
+<div id="glow"></div>
+<div id="cursor"></div>
+
+<div class="wrap">
+    <header>
+        <h1 id="name" aria-label="Alvaro Molina">Alvaro Molina</h1>
+        <nav class="reveal" style="animation-delay:1.05s">
+            <a href="index.html">Home</a>
+            <a href="writing.html">Writing</a>
+            <a href="about.html">About</a>
+        </nav>
+    </header>
+
+    <p class="intro reveal" style="animation-delay:1.15s">
+        Odds and ends people keep asking me for. Nothing here is a secret.
+    </p>
+
+    <section class="res reveal" style="animation-delay:1.3s">
+        <h2>SSH public key</h2>
+        <pre class="keybox" id="keybox"><button class="copy" id="copyKey" type="button" aria-label="Copy public key">Copy</button>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIENVSTBidU94XwWXJeG5d0MkwVgqV/3MzEgFNm0SuILd</pre>
+        <p class="keymeta">ed25519 &nbsp;·&nbsp; <code>SHA256:C0lg59THWqAbv+tDjkCWHno8Xemk9SXWl+oCypKGCbw</code> &nbsp;·&nbsp; <a href="id_ed25519.pub">raw file</a></p>
+        <pre class="cmd"><b>curl</b> -fsSL https://molinaa.com/id_ed25519.pub &gt;&gt; ~/.ssh/authorized_keys</pre>
+    </section>
+
+    <section class="res reveal" style="animation-delay:1.45s">
+        <h2>Setup</h2>
+        <ul>
+            <li><span class="name"><a href="https://github.com/Alw3ys/dotfiles" target="_blank">dotfiles</a></span><span class="what">Shell, editor and tool config. Clone, link, go ride.</span><span class="meta">github</span></li>
+        </ul>
+    </section>
+
+    <footer class="reveal" style="animation-delay:1.8s">
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/alvaro-molina" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/Alw3ys" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        </div>
+        <div class="email"><a href="mailto:a@molinaa.com">a@molinaa.com</a></div>
+        <div class="footer-misc"><a href="misc.html" class="active">misc</a></div>
+    </footer>
+</div>
+
+<script>
+  // ---- custom cursor + glow ----
+  (function () {
+    const cursor = document.getElementById('cursor');
+    const glow = document.getElementById('glow');
+    if (!cursor) return;
+    let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+    let gx = mx, gy = my;
+
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+    });
+
+    function tick() {
+      gx += (mx - gx) * 0.08; gy += (my - gy) * 0.08;
+      glow.style.transform = `translate(${gx}px, ${gy}px) translate(-50%, -50%)`;
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    document.querySelectorAll('a').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+  })();
+
+  // ---- copy the public key ----
+  (function () {
+    const btn = document.getElementById('copyKey');
+    const box = document.getElementById('keybox');
+    const cursor = document.getElementById('cursor');
+    if (!btn || !box) return;
+    const key = box.textContent.replace(/^Copy/, '').trim();
+    btn.addEventListener('mouseenter', () => cursor && cursor.classList.add('hover'));
+    btn.addEventListener('mouseleave', () => cursor && cursor.classList.remove('hover'));
+    btn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(key); } catch (_) {
+        const r = document.createRange(); r.selectNodeContents(box);
+        const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        document.execCommand('copy'); sel.removeAllRanges();
+      }
+      btn.textContent = 'Copied'; btn.classList.add('done');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1600);
+    });
+  })();
+</script>
+<script src="ridges.js"></script>
+</body>
+</html>

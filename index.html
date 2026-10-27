@@ -807,6 +807,20 @@
             .yr .events p:last-child { margin-bottom: 0; }
         }
 
+        /* small link to the misc page, tucked under the email */
+        .footer-misc { margin-top: 16px; }
+        .footer-misc a {
+            font-family: var(--serif);
+            font-size: 0.6rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--faint);
+            text-decoration: none;
+            border: none;
+            transition: color .3s ease;
+        }
+        .footer-misc a:hover, .footer-misc a.active { color: var(--accent); }
+
         @media (hover: none), (pointer: coarse) {
             body { cursor: auto; }
             #cursor, #glow { display: none; }
@@ -869,6 +883,7 @@
             <a href="https://github.com/Alw3ys" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
         </div>
         <div class="email"><a href="mailto:a@molinaa.com">a@molinaa.com</a></div>
+        <div class="footer-misc"><a href="misc.html">misc</a></div>
     </footer>
 </div>
 
